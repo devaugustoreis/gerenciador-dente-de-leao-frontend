@@ -1,4 +1,4 @@
-package com.gerenciadordentedeleao.gerenciador_dente_de_leao;
+package com.gerenciadordentedeleao;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

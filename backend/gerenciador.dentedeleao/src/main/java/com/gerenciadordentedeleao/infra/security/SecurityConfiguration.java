@@ -32,7 +32,8 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/").permitAll()
-                        .requestMatchers(HttpMethod.POST, "employee/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "user/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "user/create").permitAll()
                         .anyRequest().authenticated())
                 .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

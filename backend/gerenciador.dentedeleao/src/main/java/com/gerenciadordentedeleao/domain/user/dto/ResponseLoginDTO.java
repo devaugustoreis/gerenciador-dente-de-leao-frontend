@@ -1,4 +1,4 @@
 package com.gerenciadordentedeleao.domain.user.dto;
 
-public record ResponseLoginDTO(String barearToken) {
+public record ResponseLoginDTO(String token) {
 }

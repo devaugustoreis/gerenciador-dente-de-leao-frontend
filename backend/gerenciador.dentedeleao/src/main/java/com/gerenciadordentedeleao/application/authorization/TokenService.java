@@ -21,7 +21,7 @@ public class TokenService {
     public String generateToken(UserEntity user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.create()
+            return "Bearer " + JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getLogin())
                     .withExpiresAt(getExpirationDate())

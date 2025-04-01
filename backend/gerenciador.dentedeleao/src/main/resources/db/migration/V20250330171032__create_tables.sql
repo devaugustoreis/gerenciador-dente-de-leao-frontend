@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS dente_de_leao_manager.users(
     login        VARCHAR(255) NOT NULL UNIQUE,
     password     VARCHAR(1000) NOT NULL,
     full_name    VARCHAR(255) NOT NULL,
-    role         user_role NOT NULL DEFAULT 'USER',
+    user_role         VARCHAR(10) NOT NULL DEFAULT 'USER',
     excluded     BOOLEAN NOT NULL DEFAULT FALSE
 );
 
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS dente_de_leao_manager.materials_stock(
 DROP TABLE IF EXISTS dente_de_leao_manager.materials_historic;
 CREATE TABLE IF NOT EXISTS dente_de_leao_manager.materials_historic(
     id                      UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    movement_type           movement_type_enum NOT NULL,
+    movement_type           VARCHAR(10) NOT NULL,
     quantity                INT NOT NULL,
     movement_date           TIMESTAMP NOT NULL,
     material_stock_id       UUID NOT NULL,

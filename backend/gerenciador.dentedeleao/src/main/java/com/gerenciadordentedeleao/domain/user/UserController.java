@@ -36,7 +36,7 @@ public class UserController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<ResponseLoginDTO> login(@RequestBody RequestLoginDTO request) {
-        var userNamePassword = new UsernamePasswordAuthenticationToken(request.login(), request.password());
+        var userNamePassword = new UsernamePasswordAuthenticationToken(request.username(), request.password());
         Authentication auth = authenticationManager.authenticate(userNamePassword);
         String token = tokenService.generateToken((UserEntity) auth.getPrincipal());
         return ResponseEntity.ok(new ResponseLoginDTO(token));
@@ -45,7 +45,7 @@ public class UserController {
     @PostMapping(value = "/create")
     public void create(@RequestBody RequestLoginDTO request) {
         UserEntity user = new UserEntity();
-        user.setLogin(request.login());
+        user.setLogin(request.username());
         user.setPassword(encoder.encode(request.password()));
         user.setRole(UserRole.ADMIN);
         user.setFullName("fulName");

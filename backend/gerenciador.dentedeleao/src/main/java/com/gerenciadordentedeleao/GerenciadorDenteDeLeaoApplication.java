@@ -1,4 +1,4 @@
-package com.gerenciadordentedeleao.gerenciador_dente_de_leao;
+package com.gerenciadordentedeleao;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

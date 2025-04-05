@@ -1,0 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+/* variables.css */
+:root {
+  --deep-blue: #21618c;
+  --strong-moss-green: #4c9b89;
+  --light-blue: #5dade2;
+  --moss-green: #73c6b6;
+  --mint-green: #a2d9ce;
+  --light-gray: #d5d8dc;
+
+  /* Warnings and Alerts */
+  --yellow-warning: #f5b041;
+  --red-alert: #e74c3c;
+  --red-alert-hover: #bc3426;
+
+  --font-size: 16px;
+  --font-roboto: 'Roboto', sans-serif;
+}

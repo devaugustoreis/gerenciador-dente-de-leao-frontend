@@ -1,5 +1,12 @@
+import SectionHeader from "../components/shared/SectionHeader"
+
 const AppointmentFinalization = () => {
-    return <p>Você acessou a página de finalização de consultas.</p>
+    return (
+        <>
+            <SectionHeader title="FINALIZAR CONSULTAS" />
+            <p>Você acessou a finalização de consultas.</p>
+        </>
+    )
 }
 
 export default AppointmentFinalization

@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 2,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 3,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 4,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 5,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 6,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 7,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 8,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 9,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    },
+    {
+        "id": 10,
+        "name": "Material",
+        "imgPath": "material-placeholder.png",
+        "stockQuantity": 100,
+        "scheduledQuantity": 40,
+        "endPrevision": "2025-04-30T00:00:00Z"
+    }
+]

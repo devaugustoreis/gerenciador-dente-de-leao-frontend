@@ -1,5 +1,16 @@
+import SectionHeader from "../components/shared/SectionHeader"
+
 const Agenda = () => {
-    return <p>Você acessou a agenda.</p>
+    const teste = () => {
+        console.log("agenda")
+    }
+
+    return (
+        <>
+            <SectionHeader title="AGENDA" buttonLabel="Agendar Consulta" onClick={teste} />
+            <p>Você acessou a agenda.</p>
+        </>
+    )
 }
 
 export default Agenda

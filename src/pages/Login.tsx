@@ -5,7 +5,7 @@ import styles from "./Login.module.css"
 import denteDeLeaoLogo from "../assets/images/dente-de-leao-logo.png";
 import userIcon from "../assets/icons/user.png"
 import lockIcon from "../assets/icons/lock.png"
-import { login } from "../services/AuthService";
+import { login } from "../services/authService";
 
 const Login = () => {
     const [username, setUsername] = useState("")
@@ -38,8 +38,8 @@ const Login = () => {
 
                 {error && <p>{ error }</p>}
 
-                <button onClick={handleLogin}>ENTRAR</button>
-                <a href="#">Esqueci minha senha</a>
+                <button className={styles.loginBtn} onClick={handleLogin}>ENTRAR</button>
+                <a className={styles.resetPassword} href="#">Esqueci minha senha</a>
             </div>
         </div>
     )

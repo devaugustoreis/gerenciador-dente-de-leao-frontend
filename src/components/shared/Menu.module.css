@@ -1,0 +1,20 @@
+.menu {
+    width: 250px;
+    height: 100%;
+    background-color: var(--deep-blue);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo {
+    margin: 20px 0;
+}
+
+.menuItemList {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}

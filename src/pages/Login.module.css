@@ -48,7 +48,7 @@ input {
     margin-right: 1.2rem;
 }
 
-button {
+.loginBtn {
     width: 100%;
     padding: 1.2rem;
     margin-top: 4rem;
@@ -61,7 +61,7 @@ button {
     color: var(--moss-green);    
 }
 
-a {
+.resetPassword {
     align-self: flex-end;
     margin-top: 1.2rem;
     color: #fff;

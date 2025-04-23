@@ -1,0 +1,32 @@
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sectionTitle {
+    color: var(--deep-blue);
+    line-height: 6.4rem;
+    font-size: 6rem;
+    font-weight: bold;
+}
+
+.addButton {
+    background-color: var(--deep-blue);
+    color: #fff;
+    line-height: 2rem;
+    font-size: 1.8rem;
+    font-weight: 500;
+
+    padding: 14px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.addButton:hover {
+    background-color: var(--light-blue);
+}

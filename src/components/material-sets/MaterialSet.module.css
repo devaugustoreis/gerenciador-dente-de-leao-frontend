@@ -1,0 +1,77 @@
+:root {
+    --material-set-border: 8px;
+    --material-set-padding: 1.6rem;
+}
+
+.materialSetContainer {
+    width: 100%;
+    box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--gray);
+    border-radius: var(--material-set-border);
+    font-family: var(--font-inter);
+    transition: 0.3s;
+    cursor: pointer;
+
+    &:hover {
+        border: 2px solid var(--moss-green);
+    }
+}
+
+.materialSetHeader {
+    width: 100%;
+    padding: var(--material-set-padding);
+    background-color: var(--light-gray);
+    border-radius: var(--material-set-border) var(--material-set-border) 0 0;
+    color: var(--font-black);
+    line-height: 2rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.materialSetBody {
+    position: relative;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+.bodyWrapper {
+    padding: var(--material-set-padding);
+}
+
+.open {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.closed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.materialList {
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+        width: 50%;
+        line-height: 2.4rem;
+    }
+    
+    li:nth-child(even) span {
+        margin-left: 12px;
+    }
+}
+
+.divisionLine {
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    height: calc(100% - 8.8rem);
+    background-color: var(--gray);
+}
+
+.actionsContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.6rem;
+}

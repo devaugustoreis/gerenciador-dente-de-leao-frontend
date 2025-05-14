@@ -9,74 +9,74 @@
     },
     {
         "id": 2,
-        "name": "Material",
+        "name": "Luvas de Procedimento",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 120,
+        "scheduledQuantity": 30,
+        "endPrevision": "2025-05-05T00:00:00Z"
     },
     {
         "id": 3,
-        "name": "Material",
+        "name": "Agulhas Gengivais",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 250,
+        "scheduledQuantity": 60,
+        "endPrevision": "2025-05-12T00:00:00Z"
     },
     {
         "id": 4,
-        "name": "Material",
+        "name": "Máscaras Tripla Camada",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 200,
+        "scheduledQuantity": 50,
+        "endPrevision": "2025-05-20T00:00:00Z"
     },
     {
         "id": 5,
-        "name": "Material",
+        "name": "Sugadores Descartáveis",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 300,
+        "scheduledQuantity": 100,
+        "endPrevision": "2025-05-25T00:00:00Z"
     },
     {
         "id": 6,
-        "name": "Material",
+        "name": "Espátulas Plásticas",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
+        "stockQuantity": 180,
         "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "endPrevision": "2025-06-01T00:00:00Z"
     },
     {
         "id": 7,
-        "name": "Material",
+        "name": "Fios de Sutura Absorvíveis",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 75,
+        "scheduledQuantity": 15,
+        "endPrevision": "2025-06-08T00:00:00Z"
     },
     {
         "id": 8,
-        "name": "Material",
+        "name": "Bicabornato de Sódio",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 60,
+        "scheduledQuantity": 20,
+        "endPrevision": "2025-06-15T00:00:00Z"
     },
     {
         "id": 9,
-        "name": "Material",
+        "name": "Algodão",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 90,
+        "scheduledQuantity": 30,
+        "endPrevision": "2025-06-20T00:00:00Z"
     },
     {
         "id": 10,
-        "name": "Material",
+        "name": "Cimento de Ionômero de Vidro",
         "imgPath": "material-placeholder.png",
-        "stockQuantity": 100,
-        "scheduledQuantity": 40,
-        "endPrevision": "2025-04-30T00:00:00Z"
+        "stockQuantity": 40,
+        "scheduledQuantity": 10,
+        "endPrevision": "2025-06-25T00:00:00Z"
     }
 ]

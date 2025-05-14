@@ -1,16 +1,17 @@
 .materialItem {
     width: 20rem;
-    height: 27.2rem;
+    height: 27.4rem;
     display: flex;
     flex-direction: column;
     color: var(--dark-gray);
     background-color: var(--light-gray);
-    border: 2px solid var(--gray);
+    border: 2px solid transparent;
     border-radius: 12px;
+    box-shadow: var(--box-shadow-1);
     transition: 0.3s;
 
     &:hover {
-        border-color: var(--dark-moss-green);
+        border: 2px solid var(--dark-moss-green);
     }
 }
 
@@ -33,6 +34,9 @@
     color: var(--deep-blue);
     line-height: 2rem;
     font-size: 1.6rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .materialStockQuantity {
@@ -60,7 +64,7 @@
     cursor: pointer;
 }
 
-.closeBtn {
+.deleteBtn {
     background-color: var(--red-alert);
     align-self: flex-start;
 

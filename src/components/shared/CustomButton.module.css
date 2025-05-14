@@ -1,0 +1,59 @@
+.actionBtn {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    background-color: transparent;
+    font-family: var(--font-inter);
+    line-height: 2rem;
+    font-size: 1.6rem;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+/* Red */
+.red {
+    background-color: var(--red-alert);
+    color: #fff;
+}
+
+.red:hover {
+    background-color: var(--red-alert-hover);
+}
+
+/* Outline Red */
+.outlineRed {
+    border: 1px solid var(--red-alert);
+    color: var(--red-alert);
+}
+
+/* Green */
+.green {
+    background-color: var(--dark-moss-green);
+    color: #fff;
+}
+
+.green:hover {
+    background-color: var(--mint-green);
+    color: var(--dark-moss-green);
+}
+
+/* Outline Green */
+.outlineGreen {
+    border: 1px solid var(--dark-moss-green);
+    color: var(--dark-moss-green);
+}
+
+/* Blue */
+.blue {
+    background-color: var(--deep-blue);
+    color: #fff;
+}
+
+.blue:hover {
+    background-color: var(--light-blue);
+}
+
+/* Outline Blue */
+.outlineBlue {
+    border: 1px solid var(--deep-blue);
+    color: var(--deep-blue);
+}

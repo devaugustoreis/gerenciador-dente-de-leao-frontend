@@ -1,7 +1,8 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 /* variables.css */
 :root {
+  /* ====== COLORS ====== */
   --deep-blue: #21618c;
   --light-blue: #5dade2;
 
@@ -10,6 +11,7 @@
   --moss-green: #73c6b6;
   --mint-green: #a2d9ce;
   
+  --font-black: "#1e1e1e";
   --dark-gray: #757575;
   --gray: #d9d9d9;
   --light-gray: #f5f5f5;
@@ -19,6 +21,11 @@
   --red-alert: #e74c3c;
   --red-alert-hover: #bc3426;
 
+  /* ====== FONTS ====== */
   --font-size: 16px;
   --font-roboto: 'Roboto', sans-serif;
+  --font-inter: 'Inter', 'sans-serif';
+  
+  /* ====== SHADOWS ====== */
+  --box-shadow-1: 0px 2px 3px 1px rgba(0, 0, 0, 0.3);
 }

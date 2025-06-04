@@ -1,11 +1,11 @@
 import styles from './CustomButton.module.css'
 
-interface CustomButtonProps {
+interface CustomButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string
   actionColor: string
 }
 
-const CustomButton = ({ label, actionColor }: CustomButtonProps) => {
+const CustomButton = ({ label, actionColor, ...nativeProperties }: CustomButtonProps) => {
   const getActionClass = () => {
     switch (actionColor) {
       case "red": return styles.red
@@ -19,7 +19,7 @@ const CustomButton = ({ label, actionColor }: CustomButtonProps) => {
   }
 
   return (
-    <button className={`${styles.actionBtn} ${getActionClass()}`}>
+    <button className={`${styles.actionBtn} ${getActionClass()}`} {...nativeProperties}>
       {label}
     </button>
   )

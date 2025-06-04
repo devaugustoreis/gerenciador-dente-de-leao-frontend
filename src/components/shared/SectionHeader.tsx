@@ -1,5 +1,5 @@
 import styles from "./SectionHeader.module.css"
-import plusIcon from "../../assets/icons/plus.svg"
+import plusIcon from "@/assets/icons/plus.svg"
 
 interface SectionHeaderProps {
     title: string;

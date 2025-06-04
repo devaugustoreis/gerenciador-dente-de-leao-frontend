@@ -1,4 +1,4 @@
-import denteDeLeaoLogo from "../../assets/images/dente-de-leao-logo.png";
+import denteDeLeaoLogo from "@/assets/images/dente-de-leao-logo.png";
 import styles from "./Menu.module.css"
 import MenuItem from "./MenuItem";
 

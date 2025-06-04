@@ -7,22 +7,30 @@
     display: flex;
     flex-direction: column;
     background-color: #fff;
-    border: 2px solid var(--dark-moss-green);
+    border-width: 2px;
+    border-style: solid;
     border-radius: 8px;
     font-family: var(--font-inter);
     z-index: 1000;
 }
 
+.modal.blue { border-color: var(--deep-blue); }
+.modal.green { border-color: var(--dark-moss-green); }
+.modal.red { border-color: var(--red-alert); }
+
 .modalHeader {
     display: flex;
     justify-content: center;
     padding: 1.3rem;
-    background-color: var(--dark-moss-green);
     color: #fff;
     line-height: 2rem;
     font-size: 1.8rem;
     font-weight: 600;
 }
+
+.modalHeader.blue { background-color: var(--deep-blue); }
+.modalHeader.green { background-color: var(--dark-moss-green); }
+.modalHeader.red { background-color: var(--red-alert); }
 
 .modalContent {
     display: flex;
@@ -35,28 +43,49 @@
     display: flex;
     align-items: center;
     margin-top: 0.6rem;
+    margin: auto;
 }
 
 .materialImage {
-    width: 100px;
+    width: 154px;
     height: 100px;
-    border: 1px solid var(--dark-moss-green);
+    border-width: 1px;
+    border-style: solid;
     border-radius: 8px;
     object-fit: cover;
     margin-right: 1.6rem;
+
+    &.blue { border-color: var(--deep-blue) }
+    &.green { border-color: var(--dark-moss-green) }
+    &.red { border-color: var(--red-alert) }
 }
 
 .selectImgBtn {
     padding: 0.7rem 1.2rem;
     border-radius: 8px;
     background-color: transparent;
-    border: 1px solid var(--dark-moss-green);
-    color: var(--dark-moss-green);
+    border-width: 1px;
+    border-style: solid;
     margin-bottom: 0.8rem;
     line-height: 1.8rem;
     font-size: 1.4rem;
     transition: 0.3s;
     cursor: pointer;
+
+    &.blue {
+        border-color:var(--deep-blue);
+        color: var(--deep-blue);
+    }
+
+    &.green {
+        border-color:var(--dark-moss-green);
+        color: var(--dark-moss-green);
+    }
+
+    &.red {
+        border-color:var(--red-alert);
+        color: var(--red-alert);
+    }
 }
 
 .imgDetails {
@@ -71,15 +100,16 @@
     gap: 1.6rem;
 }
 
-/* Add Material Modal */
-.addMaterial {
+/* Material Stock Modal */
+.stockQuantity {
     margin: auto;
     color: #B3B3B3;
     font-family: var(--font-inter);
     line-height: 2.6rem;
     font-size: 2.4rem;
-
-    span {
-        color: var(--dark-moss-green);
-    }
+    text-align: center;
 }
+
+.stockQuantity .blue { color: var(--deep-blue); }
+.stockQuantity .green { color: var(--dark-moss-green); }
+.stockQuantity .red { color: var(--red-alert);}

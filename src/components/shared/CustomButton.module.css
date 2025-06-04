@@ -57,3 +57,12 @@
     border: 1px solid var(--deep-blue);
     color: var(--deep-blue);
 }
+
+button:disabled {
+    background-color: gray !important;
+    cursor: not-allowed;
+
+    &:hover {
+        color: #fff;
+    }
+}

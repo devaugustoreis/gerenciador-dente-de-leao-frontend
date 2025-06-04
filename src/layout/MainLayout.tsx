@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import styles from "./MainLayout.module.css"
-import Menu from "../components/shared/Menu";
-import TopBar from "../components/shared/Topbar";
+import Menu from "./menu/Menu";
+import TopBar from "./topbar/Topbar";
 
 const MainLayout = () => {
     return (

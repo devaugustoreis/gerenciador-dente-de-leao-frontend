@@ -1,4 +1,4 @@
-import styles from "../../pages/Login.module.css"
+import styles from "@/pages/Login.module.css"
 
 interface LoginInputProps {
     imgSrc: string,

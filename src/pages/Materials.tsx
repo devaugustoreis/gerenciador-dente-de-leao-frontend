@@ -1,13 +1,11 @@
-import { useState } from "react"
-import SectionHeader from "../components/shared/SectionHeader"
-import MaterialItem from "../components/materials/MaterialItem"
-import { createMaterialItem } from "../models/material-item.model"
-import { MaterialItem as MaterialItemModel } from "../models/material-item.model"
-import NewMaterialModal from "../components/materials/NewMaterialModal"
-import EditMaterialModal from "../components/materials/EditMaterialModal"
-import AddMaterialModal from "../components/materials/AddMaterialModal"
-import DeleteMaterialModal from "../components/materials/DeleteMaterialModal"
-import mockMaterials from "../mock-materials.json"
+import { useEffect, useState } from "react"
+import { getMaterials } from "@/services/materialService"
+import MaterialItemModel from "@/models/materials/material-item.model"
+import SectionHeader from "@/components/shared/SectionHeader"
+import MaterialCard from "@/components/materials/MaterialCard"
+import MaterialModal from "@/components/materials/modals/MaterialModal"
+import MaterialStockModal from "@/components/materials/modals/MaterialStockModal"
+import DeleteMaterialModal from "@/components/materials/modals/DeleteMaterialModal"
 
 
 const materialItensContainerStyle: React.CSSProperties = {
@@ -16,50 +14,98 @@ const materialItensContainerStyle: React.CSSProperties = {
     gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
     gap: "32px",
     maxHeight: "calc(100vh - 184px)",
-    padding: "0 2px 20px 2px",
+    padding: "0 6px 20px 2px",
     overflowY: "auto",
 }
 
+type ModalAction = "NEW" | "EDIT" | "ADD STOCK" | "REMOVE STOCK" | "DELETE" | null;
 
 const Materials = () => {
-    const [ modalOpen, setModalOpen ] = useState(false)
-    const [ modalAction, setModalAction ] = useState("new")
+    const [ loading, setLoading ] = useState(true);
+    const [ materialsList, setMaterialsList ] = useState<MaterialItemModel[]>([]);
     const [ selectedMaterial, setSelectedMaterial ] = useState<MaterialItemModel | null>(null)
+    const [ modalAction, setModalAction ] = useState<ModalAction>(null);
 
-    const openModal = (action: string, material?: MaterialItemModel) => {
-        setModalOpen(true)
-        setSelectedMaterial(material ?? null)
-        setModalAction(action)
+
+    const fetchMaterials = async () => {
+        try {
+            const data = await getMaterials();
+            setMaterialsList(data);
+        } catch (error) {
+            console.error('Erro ao buscar materiais:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchMaterials();
+    }, []);
+
+    const openModal = (action: ModalAction, material?: MaterialItemModel) => {
+        setModalAction(action);
+        setSelectedMaterial(material ?? null);
     }
 
     const closeModal = () => {
-        setModalOpen(false)
-        setSelectedMaterial(null)
+        setModalAction(null);
+        setSelectedMaterial(null);
+    }
+
+    const onActionComplete = () => {
+        setLoading(true)
+        fetchMaterials();
+        closeModal();
+    }
+
+    const renderModal = () => {
+        if (!modalAction) return null;
+
+        switch (modalAction) {
+            case "NEW":
+                return <MaterialModal onSave={onActionComplete} onClose={closeModal} />
+
+            case "EDIT":
+                return <MaterialModal material={selectedMaterial!} onSave={onActionComplete} onClose={closeModal} />
+
+            case "ADD STOCK":
+                return <MaterialStockModal action="add" material={selectedMaterial!} onStockMovement={onActionComplete} onClose={closeModal} />
+
+            case "REMOVE STOCK":
+                return <MaterialStockModal action="remove" material={selectedMaterial!} onStockMovement={onActionComplete} onClose={closeModal} />
+
+            case "DELETE":
+                return <DeleteMaterialModal material={selectedMaterial!} onDelete={onActionComplete} onClose={closeModal} />
+
+            default:
+                return null;
+        }
     }
 
     const renderMaterialItems = () => (
-        mockMaterials.map(createMaterialItem).map(material => (
-            <MaterialItem 
+        materialsList.map(material => (
+            <MaterialCard 
                 key={material.id} 
                 material={material} 
-                onEdit={(mat) => openModal("edit", mat)} 
-                onAdd={(mat) => openModal("add", mat)} 
-                onDelete={(mat) => openModal("delete", mat)} 
+                onEdit={() => openModal("EDIT", material)} 
+                onDelete={() => openModal("DELETE", material)}
+                onRemoveStock={() => openModal("REMOVE STOCK", material)} 
+                onAddStock={() => openModal("ADD STOCK", material)} 
             />
         ))
     )
 
     return (
         <>
-            <SectionHeader title="MATERIAIS" buttonLabel="Novo Material" onClick={() => openModal("new")} />
-            <div style={ materialItensContainerStyle }>
-                { renderMaterialItems() }
-            </div>
+            <SectionHeader title="MATERIAIS" buttonLabel="Novo Material" onClick={() => openModal("NEW")} />
+            
+            { loading ? <p>Carregando...</p> : (
+                <div style={ materialItensContainerStyle }>
+                    { renderMaterialItems() }
+                </div>
+            )}
 
-            { modalOpen && modalAction === "new" && <NewMaterialModal onClose={closeModal} /> }
-            { modalOpen && modalAction === "edit" && <EditMaterialModal material={selectedMaterial} onClose={closeModal} /> }
-            { modalOpen && modalAction === "add" && <AddMaterialModal material={selectedMaterial} onClose={closeModal} /> }
-            { modalOpen && modalAction === "delete" && <DeleteMaterialModal material={selectedMaterial} onClose={closeModal} /> }
+            { renderModal() }
         </>
     )
 }

@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import ProtectedRoute from "./ProtectedRoutes";
-import Login from "../pages/Login";
-import Agenda from "../pages/Agenda";
-import AppointmentFinalization from "../pages/AppointmentFinalization";
-import Materials from "../pages/Materials";
-import MaterialSets from "../pages/MaterialSets";
-import MainLayout from "../layout/MainLayout";
+import Login from "@/pages/Login";
+import Agenda from "@/pages/Agenda";
+import AppointmentFinalization from "@/pages/AppointmentFinalization";
+import Materials from "@/pages/Materials";
+import MaterialSets from "@/pages/MaterialSets";
+import MainLayout from "@/layout/MainLayout";
 
 const AppRoutes = () => (
     <BrowserRouter>

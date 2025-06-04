@@ -1,5 +1,5 @@
 const customInputStyle: React.CSSProperties = {
-    width: "100%",
+    flex: "1",
     padding: "1.2rem 1.6rem",
     borderRadius: "8px",
     border: "1px solid var(--gray)",
@@ -20,11 +20,12 @@ interface CustomInputProps {
 const CustomInput = ({ type = "text", placeholder = "value", value, onChange }: CustomInputProps) => {
     return (
         <input 
-            style={customInputStyle}
-            type={type} 
-            placeholder={placeholder}
-            value={value}
-            onChange={onChange}
+            style = { customInputStyle }
+            type = { type } 
+            placeholder = { placeholder }
+            value = { value }
+            {...(type === "number" ? { min: 0 } : {})}
+            onChange = { onChange }
         />
     )
 }

@@ -20,13 +20,15 @@ interface InputLabelProps {
 }
 
 
-const InputLabel = ({label, inputType = "text", inputPlaceholder = "", inputValue, color = "blue", onChange}: InputLabelProps) => {
+const InputLabel = ({ label, inputType = "text", inputPlaceholder = "", inputValue, color = "blue", onChange}: InputLabelProps) => {
     let labelColor = { color: "var(--deep-blue)" }
 
-    if (color === "green") labelColor = { color: "var(--dark-moss-green)" }
+    if (color === "blue") labelColor = { color: "var(--deep-blue)" }
+    else if (color === "green") labelColor = { color: "var(--dark-moss-green)" }
+    else if (color === "red") labelColor = { color: "var(--red-alert)" }
 
     return (
-        <div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
             <label style={{...labelStyle, ...labelColor}} htmlFor="">{ label }</label>
             <CustomInput type={inputType} placeholder={inputPlaceholder} value={inputValue} onChange={onChange} />
         </div>

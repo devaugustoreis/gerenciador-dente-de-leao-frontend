@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import LoginInput from "../components/login/LoginInput";
+import LoginInput from "@/components/login/LoginInput";
 import styles from "./Login.module.css"
-import denteDeLeaoLogo from "../assets/images/dente-de-leao-logo.png";
-import userIcon from "../assets/icons/user.png"
-import lockIcon from "../assets/icons/lock.png"
-import { login } from "../services/authService";
+import denteDeLeaoLogo from "@/assets/images/dente-de-leao-logo.png";
+import userIcon from "@/assets/icons/user.png"
+import lockIcon from "@/assets/icons/lock.png"
+import { login } from "@/services/authService";
 
 const Login = () => {
     const [username, setUsername] = useState("")

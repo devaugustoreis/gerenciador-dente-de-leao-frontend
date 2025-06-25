@@ -21,6 +21,7 @@ interface InputLabelProps {
 
 
 const InputLabel = ({ label, inputType = "text", inputPlaceholder = "", inputValue, color = "blue", onChange}: InputLabelProps) => {
+    const inputId = `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
     let labelColor = { color: "var(--deep-blue)" }
 
     if (color === "blue") labelColor = { color: "var(--deep-blue)" }
@@ -28,9 +29,9 @@ const InputLabel = ({ label, inputType = "text", inputPlaceholder = "", inputVal
     else if (color === "red") labelColor = { color: "var(--red-alert)" }
 
     return (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={{...labelStyle, ...labelColor}} htmlFor="">{ label }</label>
-            <CustomInput type={inputType} placeholder={inputPlaceholder} value={inputValue} onChange={onChange} />
+        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+            <label style={{...labelStyle, ...labelColor}} htmlFor={inputId}>{ label }</label>
+            <CustomInput id={inputId} type={inputType} placeholder={inputPlaceholder} value={inputValue} onChange={onChange} />
         </div>
     )
 }

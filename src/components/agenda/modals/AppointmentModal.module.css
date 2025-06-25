@@ -1,0 +1,200 @@
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 85rem;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 8px;
+    font-family: var(--font-inter);
+    z-index: 1000;
+}
+
+.modal.blue { border-color: var(--deep-blue); }
+.modal.green { border-color: var(--dark-moss-green); }
+.modal.red { border-color: var(--red-alert); }
+
+.modalHeader {
+    display: flex;
+    justify-content: center;
+    padding: 1.3rem;
+    color: #fff;
+    line-height: 2rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.modalHeader.blue { background-color: var(--deep-blue); }
+.modalHeader.green { background-color: var(--dark-moss-green); }
+.modalHeader.red { background-color: var(--red-alert); }
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem 2.4rem 2.4rem 2.4rem;
+}
+
+.modalLabel {
+    margin-right: 8px;
+    font-family: var(--font-inter);
+    line-height: 2rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+
+    &.blue { color: var(--deep-blue) }
+    &.green { color: var(--dark-moss-green) }
+    &.red { color: var(--red-alert) }
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.8rem;
+
+    .row {
+        display: flex;
+        column-gap: 3rem;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-family: var(--font-inter);
+        line-height: 2rem;
+        font-size: 1.6rem;
+        font-weight: 500;
+
+        &.blue { color: var(--deep-blue) }
+        &.green { color: var(--dark-moss-green) }
+        &.red { color: var(--red-alert) }
+    }
+
+    input {
+        flex: 1;
+        padding: 1.2rem 1.6rem;
+        border-radius: 8px;
+        border: 1px solid var(--gray);
+        color: var(--font-black);
+        font-family: var(--font-inter);
+        line-height: 1.8rem;
+        font-size: 1.6rem;
+        font-weight: 500;
+    }
+}
+
+h3 {
+    margin: 1.6rem auto 1rem auto;
+
+    &.blue { color: var(--deep-blue) }
+    &.green { color: var(--dark-moss-green) }
+}
+
+.materialSetContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .materialSet {
+        font-weight: 400;
+        font-size: 1.4rem;
+        line-height: 2rem;
+        padding: 0.6rem 1.2rem;
+        color: #fff;
+        border-radius: 8px;
+        transition: 0.3s;
+        cursor: pointer;
+
+        &.blue { 
+            background-color: var(--deep-blue);
+            &:hover { background-color: var(--light-blue); }
+        }
+        &.green { 
+            background-color: var(--dark-moss-green);
+            &:hover { background-color: var(--mint-green); }
+        }
+    }
+}
+
+.materialList {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 1.8rem 0;
+    max-height: 26.5rem;
+    overflow-y: scroll;
+    color: var(--disabled-gray);
+
+    li {
+        width: 50%;
+        line-height: 2.4rem;
+        display: flex;
+        align-items: center;
+
+        span.blue { color: var(--deep-blue); font-weight: 700; }
+        span.green { color: var(--dark-moss-green); font-weight: 700; }
+    }
+    
+    li:nth-child(even) span {
+        margin-left: 12px;
+    }
+}
+
+.actionBtn {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.removeQuantityBtn {
+    border-width: 1px; 
+    border-style: solid;
+    margin-left: auto;
+    margin-right: 5px;
+
+    &.blue { 
+        border-color: var(--deep-blue); 
+        &:hover { background-color: var(--light-blue); }
+
+        img { filter: invert(32%) sepia(73%) saturate(653%) hue-rotate(164deg) brightness(82%) contrast(84%); }
+    }
+
+    &.green { 
+        border-color: var(--dark-moss-green); 
+        &:hover { background-color: var(--mint-green); }
+
+        img { filter: invert(48%) sepia(62%) saturate(290%) hue-rotate(116deg) brightness(99%) contrast(90%); }
+    }
+}
+
+.addQuantityBtn.blue {
+    background-color: var(--deep-blue); 
+    &:hover { background-color: var(--light-blue); }
+}
+
+.addQuantityBtn.green { 
+    background-color: var(--dark-moss-green); 
+    &:hover { background-color: var(--mint-green); }
+}
+
+.divisionLine {
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    margin-top: 37rem;
+    height: calc(100% - 51.5rem);
+    background-color: var(--gray);
+}
+
+.actionsContainer {
+    display: flex;
+    justify-content: center;
+    gap: 1.6rem;
+}

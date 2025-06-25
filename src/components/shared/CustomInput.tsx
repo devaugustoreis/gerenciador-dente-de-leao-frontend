@@ -11,15 +11,17 @@ const customInputStyle: React.CSSProperties = {
 }
 
 interface CustomInputProps {
+    id?: string;
     type?: string;
     placeholder?: string;
     value?: string | number;
     onChange?: (e: any) => void
 }
 
-const CustomInput = ({ type = "text", placeholder = "value", value, onChange }: CustomInputProps) => {
+const CustomInput = ({ id, type = "text", placeholder = "value", value, onChange }: CustomInputProps) => {
     return (
         <input 
+            id={id}
             style = { customInputStyle }
             type = { type } 
             placeholder = { placeholder }

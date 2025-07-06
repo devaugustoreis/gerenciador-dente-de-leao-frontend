@@ -1,34 +1,38 @@
-import { useState } from 'react'
-import styles from './MaterialModal.module.css'
-import ModalOverlay from '@/components/shared/ModalOverlay'
-import InputLabel from '@/components/shared/InputLabel'
-import CustomButton from '@/components/shared/CustomButton'
-import MaterialItem from '@/models/materials/material-item.model'
-import CreateUpdateMaterial from '@/models/materials/create-update-material'
-import { createMaterial, updateMaterial } from '@/services/materialService'
-
+import { useState } from "react"
+import toast from "react-hot-toast"
+import styles from "./MaterialModal.module.css"
+import ModalOverlay from "@/components/shared/ModalOverlay"
+import InputLabel from "@/components/shared/InputLabel"
+import CustomButton from "@/components/shared/CustomButton"
+import MaterialItem from "@/models/materials/material-item.model"
+import CreateUpdateMaterial from "@/models/materials/create-update-material"
+import { createMaterial, updateMaterial } from "@/services/materialService"
+import { useAppData } from "@/store/AppDataContext"
 
 interface MaterialModalProps {
     material?: MaterialItem
-    onSave: () => void
     onClose: () => void
 }
 
-
-const MaterialModal = ({ material, onSave, onClose }: MaterialModalProps) => {
+const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
+    const imageSrc = new URL(`@/assets/images/material-placeholder.png`, import.meta.url).href
+    const { materials, setMaterials } = useAppData()
     const isEditing = !!material
-    const imageSrc = new URL(`@/assets/images/material-placeholder.png`, import.meta.url).href;
-    
+
     const config = {
         create: {
-            style: 'blue',
-            title: 'Novo Material',
-            confirmLabel: 'Cadastrar',
+            style: "blue",
+            title: "Novo Material",
+            confirmLabel: "Cadastrar",
+            loadingToast: "Cadastrando material...",
+            successToast: "O material foi cadastrado com sucesso!"
         },
         update: {
-            style: 'green',
-            title: 'Editar Material',
-            confirmLabel: 'Salvar Alterações',
+            style: "green",
+            title: "Editar Material",
+            confirmLabel: "Salvar Alterações",
+            loadingToast: "Salvando alterações...",
+            successToast: "O material foi atualizado com sucesso!"
         }
     }
 
@@ -42,28 +46,39 @@ const MaterialModal = ({ material, onSave, onClose }: MaterialModalProps) => {
         })
     }
 
-    const [ formData, setFormData ] = useState<CreateUpdateMaterial>(
+    const [formData, setFormData] = useState<CreateUpdateMaterial>(
         material ? convertMaterialItemToCreateUpdate(material) : new CreateUpdateMaterial()
     )
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, name: e.target.value });
+        setFormData({ ...formData, name: e.target.value })
     }
 
     const handleSave = async () => {
+        const action = isEditing ? updateMaterial(formData) : createMaterial(formData)
+
         try {
-            if (isEditing) {
-                await updateMaterial(formData)
-            } else {
-                await createMaterial(formData)
-            }
-            onSave()
+            const responseMaterial = await toast.promise(
+                action,
+                {
+                    loading: modalConfig.loadingToast,
+                    success: modalConfig.successToast,
+                    error: "Ocorreu um erro ao salvar o material!"
+                }
+            )
+
+            responseMaterial.imgPath = "material-placeholder.png"
+            const updatedMaterials = isEditing
+                ? materials.map(material => (material.id === responseMaterial.id ? responseMaterial : material))
+                : [...materials, responseMaterial]
+
+            setMaterials(updatedMaterials)
+            onClose()
 
         } catch (error) {
             console.error("Erro ao salvar material:", error)
         }
     }
-
 
     return (
         <>

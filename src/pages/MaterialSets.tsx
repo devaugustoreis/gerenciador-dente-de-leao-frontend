@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react"
-import { getMaterialSets } from "@/services/materialSetService"
+import { useState } from "react"
+import { useAppData } from "@/store/AppDataContext"
 import MaterialSetModel from "@/models/material-sets/material-set.model"
 import SectionHeader from "@/components/shared/SectionHeader"
 import MaterialSet from "@/components/material-sets/MaterialSet"
 import MaterialSetModal from "@/components/material-sets/modals/MaterialSetModal"
 import DeleteMaterialSetModal from "@/components/material-sets/modals/DeleteMaterialSetModal"
+import Spinner from "@/components/shared/Spinner"
 
 
 const MaterialSetsContainerStyle: React.CSSProperties = {
@@ -20,89 +21,63 @@ const MaterialSetsContainerStyle: React.CSSProperties = {
 type ModalAction = "NEW" | "EDIT" | "DELETE" | null;
 
 const MaterialSets = () => {
-    const [ loading, setLoading ] = useState(true);
-    const [ materialSetList, setMaterialSetList ] = useState<MaterialSetModel[]>([]);
+    const { materialSets, isLoading } = useAppData()
     const [ selectedMaterialSet, setSelectedMaterialSet ] = useState<MaterialSetModel | null>(null)
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
-    const [ modalAction, setModalAction ] = useState<ModalAction>(null);
-
-    const fetchMaterialSets = async () => {
-        try {
-            const data = await getMaterialSets();
-            setMaterialSetList(data);
-        } catch (error) {
-            console.error('Erro ao buscar materiais:', error);
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        fetchMaterialSets();
-    }, []);
+    const [ modalAction, setModalAction ] = useState<ModalAction>(null)
 
     const openModal = (action: ModalAction, materialSet?: MaterialSetModel) => {
-        setModalAction(action);
-        setSelectedMaterialSet(materialSet ?? null);
+        setModalAction(action)
+        setSelectedMaterialSet(materialSet ?? null)
     }
 
     const closeModal = () => {
-        setModalAction(null);
-        setSelectedMaterialSet(null);
-    }
-
-    const onActionComplete = () => {
-        setLoading(true)
-        fetchMaterialSets();
-        closeModal();
+        setModalAction(null)
+        setSelectedMaterialSet(null)
     }
 
     const handleToggle = (id: string) => {
-        setOpenSetId(previousId => (previousId == id) ? null : id)
+        setOpenSetId(previousId => (previousId === id ? null : id))
     }
 
     const renderModal = () => {
-        if (!modalAction) return null;
+        if (!modalAction) return null
 
         switch (modalAction) {
             case "NEW":
-                return <MaterialSetModal onSave={onActionComplete} onClose={closeModal} />
-
+                return <MaterialSetModal onClose={closeModal} />
             case "EDIT":
-                return <MaterialSetModal materialSet={selectedMaterialSet!} onSave={onActionComplete} onClose={closeModal} />
-
+                return <MaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
             case "DELETE":
-                return <DeleteMaterialSetModal materialSet={selectedMaterialSet!} onDelete={onActionComplete} onClose={closeModal} />
-
+                return <DeleteMaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
             default:
-                return null;
+                return null
         }
     }
 
-    const renderMaterialSets = () => (
-        materialSetList.map(materialSet => (
-            <MaterialSet 
-                key={materialSet.id} 
+    const renderMaterialSets = () =>
+        materialSets.map(materialSet => (
+            <MaterialSet
+                key={materialSet.id}
                 materialSet={materialSet}
                 isOpen={openSetId === materialSet.id}
-                onToggle={handleToggle}    
-                onEdit={() => openModal("EDIT", materialSet)} 
-                onDelete={() => openModal("DELETE", materialSet)} 
+                onToggle={handleToggle}
+                onEdit={() => openModal("EDIT", materialSet)}
+                onDelete={() => openModal("DELETE", materialSet)}
             />
         ))
-    )
 
     return (
         <>
             <SectionHeader title="CONJUNTOS" buttonLabel="Novo Conjunto" onClick={() => openModal("NEW")} />
-            
-            { loading ? <p>Carregando...</p> : (
-                <div style={ MaterialSetsContainerStyle }>
-                    { renderMaterialSets() }
+
+            { isLoading.materialSets ? <Spinner /> : (
+                <div style={MaterialSetsContainerStyle}>
+                    {renderMaterialSets()}
                 </div>
             )}
 
-            { renderModal() }
+            {renderModal()}
         </>
     )
 }

@@ -48,6 +48,13 @@ input {
     margin-right: 1.2rem;
 }
 
+.failedLoginMsg {
+    margin-top: 4px;
+    font: bold 1.6rem/2rem 'Roboto', sans-serif;
+    color: #fff;
+    font-weight: 400;
+}
+
 .loginBtn {
     width: 100%;
     padding: 1.2rem;

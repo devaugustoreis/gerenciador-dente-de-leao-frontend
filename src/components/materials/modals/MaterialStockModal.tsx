@@ -1,41 +1,46 @@
-import styles from './MaterialModal.module.css'
-import ModalOverlay from '@/components/shared/ModalOverlay'
-import InputLabel from '@/components/shared/InputLabel'
-import CustomButton from '@/components/shared/CustomButton'
+import toast from "react-hot-toast"
+import styles from "@/components/materials/modals/MaterialModal.module.css"
+import ModalOverlay from "@/components/shared/ModalOverlay"
+import InputLabel from "@/components/shared/InputLabel"
+import CustomButton from "@/components/shared/CustomButton"
 import MaterialItemModel from "@/models/materials/material-item.model"
-import { useState } from 'react'
-import { movementMaterialStock } from '@/services/materialService'
-import MovementStock, { MovementType } from '@/models/materials/movement-stock.model'
+import { useState } from "react"
+import { movementMaterialStock } from "@/services/materialService"
+import MovementStock, { MovementType } from "@/models/materials/movement-stock.model"
+import { useAppData } from "@/store/AppDataContext"
 
 interface AddMaterialModalProps {
-    action: 'add' | 'remove'
+    action: "add" | "remove"
     material: MaterialItemModel
-    onStockMovement: () => void
     onClose: () => void
 }
 
-const MaterialStockModal = ({ action, material, onClose, onStockMovement }: AddMaterialModalProps) => {
-    const [ movement, setMovement ] = useState<MovementStock>(
+const MaterialStockModal = ({ action, material, onClose }: AddMaterialModalProps) => {
+    const { materials, setMaterials } = useAppData()
+
+    const [movement, setMovement] = useState<MovementStock>(
         new MovementStock({
             materialId: material.id,
-            movementType: action === 'add' ? MovementType.ADDITION : MovementType.REMOVAL,
+            movementType: action === "add" ? MovementType.ADDITION : MovementType.REMOVAL,
             quantity: 0
         })
     )
 
     const config = {
         add: {
-            style: 'green',
-            title: 'Adicionar Estoque',
+            style: "green",
+            title: "Adicionar Estoque",
             message: `Quantas unidades deseja adicionar ao estoque de ${material.name}?`,
-            buttonLabel: 'Adicionar',
+            buttonLabel: "Adicionar",
+            loadingToast: `Adicionando ${movement.quantity} unidades no estoque...`,
             getNewStock: () => material.stockQuantity + movement.quantity
         },
         remove: {
-            style: 'red',
-            title: 'Remover Estoque',
+            style: "red",
+            title: "Remover Estoque",
             message: `Quantas unidades deseja remover do estoque de ${material.name}?`,
-            buttonLabel: 'Remover',
+            buttonLabel: "Remover",
+            loadingToast: `Removendo ${movement.quantity} unidades do estoque...`,
             getNewStock: () => material.stockQuantity - movement.quantity
         }
     }[action]
@@ -45,7 +50,6 @@ const MaterialStockModal = ({ action, material, onClose, onStockMovement }: AddM
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = parseInt(e.target.value) || 0
         if (value < 0) value = 0
-
         setMovement(prev => ({
             ...prev,
             quantity: value
@@ -54,9 +58,22 @@ const MaterialStockModal = ({ action, material, onClose, onStockMovement }: AddM
 
     const handleConfirm = async () => {
         try {
-            await movementMaterialStock(movement)
-            onStockMovement()
+            const result = await toast.promise(
+                movementMaterialStock(movement),
+                {
+                    loading: config.loadingToast,
+                    success: "O estoque foi atualizado com sucesso!",
+                    error: "Ocorreu um erro ao atualizar o estoque!"
+                }
+            )
 
+            const updatedMaterials = materials.map(mat =>
+                mat.id === material.id ? { ...mat, stockQuantity: result.stockQuantity } : mat
+            )
+
+            setMaterials(updatedMaterials)
+            onClose()
+            
         } catch (error) {
             console.error("Erro ao movimentar estoque:", error)
         }
@@ -69,14 +86,14 @@ const MaterialStockModal = ({ action, material, onClose, onStockMovement }: AddM
                 <div className={`${styles.modalHeader} ${styles[config.style]}`}>{config.title}</div>
 
                 <div className={styles.modalContent}>
-                    <InputLabel 
-                        label={config.message} 
-                        color={config.style} 
-                        inputType="number" 
-                        inputValue={movement.quantity} 
-                        onChange={handleInputChange} 
+                    <InputLabel
+                        label={config.message}
+                        color={config.style}
+                        inputType="number"
+                        inputValue={movement.quantity}
+                        onChange={handleInputChange}
                     />
-                    
+
                     <h1 className={styles.stockQuantity}>
                         {material.stockQuantity} -&gt; <span className={styles[config.style]}>{config.getNewStock()}</span>
                     </h1>

@@ -11,7 +11,7 @@ export default class MaterialSet {
     items: MaterialSetItem[];
 
     constructor(data: Partial<MaterialSet> = {}) {
-        this.id = data.id ?? "Sem id";
+        this.id = data.id ?? "";
         this.label = data.label ?? "";
         this.items = data.items ?? [];
     }

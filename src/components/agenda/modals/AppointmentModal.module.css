@@ -86,7 +86,7 @@
     }
 }
 
-h3 {
+.modalSubtitle {
     margin: 1.6rem auto 1rem auto;
 
     &.blue { color: var(--deep-blue) }

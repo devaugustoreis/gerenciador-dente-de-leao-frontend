@@ -1,77 +1,46 @@
-import { useEffect, useState } from 'react'
-import styles from '@/components/agenda/modals/AppointmentModal.module.css'
-import ModalOverlay from '@/components/shared/ModalOverlay'
-import CustomButton from '@/components/shared/CustomButton'
-import { getMaterialSets } from "@/services/materialSetService"
-import { getMaterials } from "@/services/materialService"
-import { createAppointment, updateAppointment } from '@/services/appointmentService'
-import Appointment, { AppointmentMaterial } from '@/models/appointments/appointment.model' 
-import MaterialSet from '@/models/material-sets/material-set.model'
-import MaterialItemModel from '@/models/materials/material-item.model'
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import styles from "@/components/agenda/modals/AppointmentModal.module.css"
+import ModalOverlay from "@/components/shared/ModalOverlay"
+import CustomButton from "@/components/shared/CustomButton"
+import { createAppointment, updateAppointment } from "@/services/appointmentService"
+import Appointment, { AppointmentMaterial } from "@/models/appointments/appointment.model"
 import minusIcon from "@/assets/icons/minus.svg"
 import plusIcon from "@/assets/icons/plus.svg"
-import InputLabel from '@/components/shared/InputLabel'
-
+import InputLabel from "@/components/shared/InputLabel"
+import { useAppData } from "@/store/AppDataContext"
+import Spinner from "@/components/shared/Spinner"
 
 interface AppointmentModalProps {
     appointment?: Appointment
-    onSave: () => void
     onClose: () => void
 }
 
-
-const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProps) => {
+const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
     const isEditing = !!appointment
-    const [ loadingMaterialSets, setLoadingMaterialSets ] = useState(true) 
-    const [ loadingMaterials, setLoadingMaterials ] = useState(true) 
-    const [ materialSets, setMaterialSets ] = useState<MaterialSet[]>([])
-    const [ materialsList, setMaterialsList ] = useState<MaterialItemModel[]>([])
-    const [ formData, setFormData ] = useState<Appointment>( appointment ? new Appointment({ ...appointment }) : new Appointment() )
-
+    const { isLoading, materialSets, materials, setAppointments, appointments } = useAppData()
+    const [formData, setFormData] = useState<Appointment>(appointment ? new Appointment({ ...appointment }) : new Appointment())
 
     const config = {
         create: {
-            style: 'blue',
-            title: 'Nova Consulta',
-            confirmLabel: 'Agendar',
+            style: "blue",
+            title: "Nova Consulta",
+            confirmLabel: "Agendar",
+            loadingToast: "Agendando consulta...",
+            successToast: "A consulta foi agendada com sucesso!",
+            errorToast: "Erro ao agendar consulta!",
         },
         update: {
-            style: 'green',
-            title: 'Editar Consulta',
-            confirmLabel: 'Salvar Alterações',
-        }
+            style: "green",
+            title: "Editar Consulta",
+            confirmLabel: "Salvar Alterações",
+            loadingToast: "Editando consulta...",
+            successToast: "A consulta foi atualizada com sucesso!",
+            errorToast: "Erro ao atualizar consulta",
+        },
     }
 
     const modalConfig = isEditing ? config.update : config.create
-
-
-    const fetchMaterialSets = async () => {
-        try {
-            const data = await getMaterialSets()
-            setMaterialSets(data)
-        } catch (error) {
-            console.error('Erro ao buscar conjuntos:', error)
-        } finally {
-            setLoadingMaterialSets(false)
-        }
-    }
-
-    const fetchMaterials = async () => {
-        try {
-            const data = await getMaterials()
-            setMaterialsList(data)
-        } catch (error) {
-            console.error('Erro ao buscar materiais:', error)
-        } finally {
-            setLoadingMaterials(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchMaterialSets()
-        fetchMaterials()
-    }, [])
-
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, patientName: e.target.value })
@@ -88,7 +57,7 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
     }
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newDate = e.target.value;
+        const newDate = e.target.value
         setFormData(prev => ({
             ...prev,
             startDate: updateDatePart(prev.startDate, newDate),
@@ -112,19 +81,18 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
         }))
     }
 
-    const handleApplyMaterialSet = (materialSet: MaterialSet) => {
+    const handleApplyMaterialSet = (materialSet: typeof materialSets[number]) => {
         setFormData(prev => {
             const updatedMaterials = [...prev.materials]
 
             materialSet.items.forEach(setItem => {
                 const existingItem = updatedMaterials.find(item => item.materialId === setItem.material.id)
-
                 if (existingItem) {
                     existingItem.quantity += setItem.quantity
                 } else {
                     updatedMaterials.push({
                         materialId: setItem.material.id,
-                        quantity: setItem.quantity
+                        quantity: setItem.quantity,
                     })
                 }
             })
@@ -133,16 +101,14 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
         })
     }
 
-    const handleAddQuantity = (material: MaterialItemModel) => {
-        setFormData((prev) => {
+    const handleAddQuantity = (material: typeof materials[number]) => {
+        setFormData(prev => {
             const existingItem = prev.materials.find(item => item.materialId === material.id)
             let newMaterials: AppointmentMaterial[]
 
             if (existingItem) {
                 newMaterials = prev.materials.map(item =>
-                    item.materialId === material.id
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
+                    item.materialId === material.id ? { ...item, quantity: item.quantity + 1 } : item,
                 )
             } else {
                 newMaterials = [...prev.materials, { materialId: material.id, quantity: 1 }]
@@ -152,8 +118,8 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
         })
     }
 
-    const handleRemoveQuantity = (material: MaterialItemModel) => {
-        setFormData((prev) => {
+    const handleRemoveQuantity = (material: typeof materials[number]) => {
+        setFormData(prev => {
             const existingItem = prev.materials.find(item => item.materialId === material.id)
             if (!existingItem) return prev
 
@@ -162,9 +128,7 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
                 newMaterials = prev.materials.filter(item => item.materialId !== material.id)
             } else {
                 newMaterials = prev.materials.map(item =>
-                    item.materialId === material.id
-                        ? { ...item, quantity: item.quantity - 1 }
-                        : item
+                    item.materialId === material.id ? { ...item, quantity: item.quantity - 1 } : item,
                 )
             }
 
@@ -178,37 +142,50 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
     }
 
     const handleSave = async () => {
+        const action = isEditing ? updateAppointment(formData) : createAppointment(formData)
+
         try {
+            await toast.promise(action, {
+                loading: modalConfig.loadingToast,
+                success: modalConfig.successToast,
+                error: modalConfig.errorToast,
+            })
+
+            let updatedAppointments: typeof appointments
             if (isEditing) {
-                await updateAppointment(formData)
+                updatedAppointments = appointments.map(app => (app.id === formData.id ? formData : app))
             } else {
-                await createAppointment(formData)
+                updatedAppointments = [...appointments, formData]
             }
-            onSave()
+            setAppointments(updatedAppointments)
+            onClose()
+
         } catch (error) {
             console.error("Erro ao salvar consulta:", error)
         }
     }
 
     const renderMaterialSets = () => {
-        if (loadingMaterialSets) return <p>Carregando Conjuntos...</p>
-
         return materialSets.map(materialSet => (
-            <div key={materialSet.id} className={`${styles.materialSet} ${styles[modalConfig.style]}`} onClick={() => handleApplyMaterialSet(materialSet)}>
+            <div
+                key={materialSet.id}
+                className={`${styles.materialSet} ${styles[modalConfig.style]}`}
+                onClick={() => handleApplyMaterialSet(materialSet)}
+            >
                 {materialSet.label}
             </div>
         ))
     }
 
     const renderMaterialsList = () => {
-        if (loadingMaterials) return <p>Carregando Materiais...</p>
-
-        return materialsList.map(material => {
+        return materials.map(material => {
             const quantity = getMaterialQuantity(material.id)
 
             return (
                 <li key={material.id}>
-                    <span className={quantity > 0 ? styles[modalConfig.style] : undefined}>{quantity} {material.name}</span>
+                    <span className={quantity > 0 ? styles[modalConfig.style] : undefined}>
+                        {quantity} {material.name}
+                    </span>
                     <button
                         className={`${styles.actionBtn} ${styles.removeQuantityBtn} ${styles[modalConfig.style]}`}
                         onClick={() => handleRemoveQuantity(material)}
@@ -232,17 +209,19 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
 
             <div className={`${styles.modal} ${styles[modalConfig.style]}`}>
                 <div className={`${styles.modalHeader} ${styles[modalConfig.style]}`}>{modalConfig.title}</div>
-                
+
                 <div className={styles.modalContent}>
                     <div className={styles.inputContainer}>
                         <div className={styles.row}>
                             <InputLabel label="Nome do Paciente" inputValue={formData.patientName} onChange={handleInputChange} color={modalConfig.style} />
                             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                                <label className={`${styles[modalConfig.style]}`} htmlFor="appointment-date">Data da Consulta</label>
-                                <input 
-                                    id="appointment-date" 
+                                <label className={`${styles[modalConfig.style]}`} htmlFor="appointment-date">
+                                    Data da Consulta
+                                </label>
+                                <input
+                                    id="appointment-date"
                                     type="date"
-                                    className={`${styles[modalConfig.style]}`}        
+                                    className={`${styles[modalConfig.style]}`}
                                     value={formData.startDate.toISOString().split("T")[0]}
                                     onChange={handleDateChange}
                                 />
@@ -251,7 +230,9 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
 
                         <div className={styles.row}>
                             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                                <label className={`${styles[modalConfig.style]}`} htmlFor="start-date">Horário de Início</label>
+                                <label className={`${styles[modalConfig.style]}`} htmlFor="start-date">
+                                    Horário de Início
+                                </label>
                                 <input
                                     id="start-date"
                                     type="time"
@@ -263,8 +244,10 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
                                 />
                             </div>
                             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                                <label className={`${styles[modalConfig.style]}`} htmlFor="end-date">Horário de Término</label>
-                                <input 
+                                <label className={`${styles[modalConfig.style]}`} htmlFor="end-date">
+                                    Horário de Término
+                                </label>
+                                <input
                                     id="end-date"
                                     type="time"
                                     step="900"
@@ -275,16 +258,15 @@ const AppointmentModal = ({ appointment, onSave, onClose }: AppointmentModalProp
                         </div>
                     </div>
 
-                    <h3 className={`${styles[modalConfig.style]}`}>Lista de Materiais</h3>
+                    <h3 className={`${styles.modalSubtitle} ${styles[modalConfig.style]}`}>Lista de Materiais</h3>
 
-                    <div className={styles.materialSetContainer}>
-                        {renderMaterialSets()}
-                    </div>
-
-                    {!loadingMaterials && <div className={styles.divisionLine}></div>}
-                    <ul className={styles.materialList}>
-                        {renderMaterialsList()}
-                    </ul>
+                    { !isLoading.materialSets && !isLoading.materials ? (
+                    <>
+                        <div className={styles.materialSetContainer}>{renderMaterialSets()}</div>
+                        <div className={styles.divisionLine}></div>
+                        <ul className={styles.materialList}>{renderMaterialsList()}</ul>
+                    </>
+                    ) : ( <Spinner /> )}
 
                     <div className={styles.actionsContainer}>
                         <CustomButton label="Cancelar" actionColor={`outline-${modalConfig.style}`} onClick={onClose} />

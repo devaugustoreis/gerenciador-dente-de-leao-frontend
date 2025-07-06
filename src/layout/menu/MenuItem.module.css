@@ -15,6 +15,10 @@
     background-color: var(--moss-green);
 }
 
+.active {
+  background-color: var(--light-blue);
+}
+
 .menuItem:last-child {
     margin-top: auto;
     margin-bottom: 10px;

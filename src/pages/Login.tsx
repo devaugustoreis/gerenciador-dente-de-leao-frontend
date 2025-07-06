@@ -34,9 +34,9 @@ const Login = () => {
                 <img src={ denteDeLeaoLogo } alt="Logo da Clínica Dente de Leão" className={styles.logo} />
 
                 <LoginInput imgSrc={ userIcon } placeholder="USUÁRIO" value={username} onChange={e => setUsername(e.target.value)} />
-                <LoginInput imgSrc={ lockIcon } placeholder="SENHA" value={password} onChange={e => setPassword(e.target.value)} />
+                <LoginInput imgSrc={ lockIcon } type="password" placeholder="SENHA" value={password} onChange={e => setPassword(e.target.value)} />
 
-                {error && <p>{ error }</p>}
+                {error && <p className={styles.failedLoginMsg}>{ error }</p>}
 
                 <button className={styles.loginBtn} onClick={handleLogin}>ENTRAR</button>
                 <a className={styles.resetPassword} href="#">Esqueci minha senha</a>

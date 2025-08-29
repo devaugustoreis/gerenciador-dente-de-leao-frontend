@@ -18,7 +18,7 @@ export const createAppointment = async (appointment: Appointment): Promise<Appoi
 
 
 export const updateAppointment = async (appointment: Appointment): Promise<Appointment> => {
-	const response = await api.put<Appointment>(appointmentsAPI, appointment);
+	const response = await api.put<Appointment>(`${appointmentsAPI}/update/${appointment.id}`, appointment);
 	return response.data;
 };
 

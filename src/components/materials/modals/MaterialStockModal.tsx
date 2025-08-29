@@ -88,6 +88,7 @@ const MaterialStockModal = ({ action, material, onClose }: AddMaterialModalProps
                 <div className={styles.modalContent}>
                     <InputLabel
                         label={config.message}
+                        labelAlignment="center"
                         color={config.style}
                         inputType="number"
                         inputValue={movement.quantity}

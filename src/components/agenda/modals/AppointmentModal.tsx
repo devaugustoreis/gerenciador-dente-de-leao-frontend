@@ -12,14 +12,14 @@ import { useAppData } from "@/store/AppDataContext"
 import Spinner from "@/components/shared/Spinner"
 
 interface AppointmentModalProps {
-    appointment?: Appointment
+    appointment: Appointment
     onClose: () => void
 }
 
 const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
-    const isEditing = !!appointment
+    const isEditing = appointment.id !== "Sem id"
     const { isLoading, materialSets, materials, setAppointments, appointments } = useAppData()
-    const [formData, setFormData] = useState<Appointment>(appointment ? new Appointment({ ...appointment }) : new Appointment())
+    const [formData, setFormData] = useState<Appointment>(new Appointment({ ...appointment }))
 
     const config = {
         create: {
@@ -46,6 +46,22 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
         setFormData({ ...formData, patientName: e.target.value })
     }
 
+    const generateTimeOptions = () => {
+        const options: string[] = []
+
+        for (let h = 6; h <= 22; h++) {
+            for (let m = 0; m < 60; m += 15) {
+                const hh = String(h).padStart(2, "0")
+                const mm = String(m).padStart(2, "0")
+                options.push(`${hh}:${mm}`)
+                if (h == 22) break
+            }
+        }
+        return options
+    }
+
+    const timeOptions = generateTimeOptions()
+
     const updateDatePart = (date: Date, newDateString: string): Date => {
         const [year, month, day] = newDateString.split("-").map(Number)
         return new Date(year, month - 1, day, date.getHours(), date.getMinutes())
@@ -65,7 +81,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
         }))
     }
 
-    const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleStartTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newTime = e.target.value
         setFormData(prev => ({
             ...prev,
@@ -73,7 +89,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
         }))
     }
 
-    const handleEndTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleEndTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newTime = e.target.value
         setFormData(prev => ({
             ...prev,
@@ -145,17 +161,17 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
         const action = isEditing ? updateAppointment(formData) : createAppointment(formData)
 
         try {
-            await toast.promise(action, {
+            const responseAppointment = await toast.promise(action, {
                 loading: modalConfig.loadingToast,
                 success: modalConfig.successToast,
                 error: modalConfig.errorToast,
             })
 
-            let updatedAppointments: typeof appointments
+            let updatedAppointments
             if (isEditing) {
-                updatedAppointments = appointments.map(app => (app.id === formData.id ? formData : app))
+                updatedAppointments = appointments.map(appointment => (appointment.id === responseAppointment.id ? responseAppointment : appointment))
             } else {
-                updatedAppointments = [...appointments, formData]
+                updatedAppointments = [...appointments, responseAppointment]
             }
             setAppointments(updatedAppointments)
             onClose()
@@ -222,7 +238,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                                     id="appointment-date"
                                     type="date"
                                     className={`${styles[modalConfig.style]}`}
-                                    value={formData.startDate.toISOString().split("T")[0]}
+                                    value={formData.startDate.toLocaleDateString("en-CA")} // <-- evita UTC
                                     onChange={handleDateChange}
                                 />
                             </div>
@@ -230,30 +246,27 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
 
                         <div className={styles.row}>
                             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                                <label className={`${styles[modalConfig.style]}`} htmlFor="start-date">
-                                    Horário de Início
-                                </label>
-                                <input
+                                <label className={`${styles[modalConfig.style]}`} htmlFor="start-date">Horário de Início</label>
+                                <select
                                     id="start-date"
-                                    type="time"
-                                    step="900"
-                                    min="05:00"
-                                    max="22:00"
                                     value={formData.startDate.toTimeString().slice(0, 5)}
                                     onChange={handleStartTimeChange}
-                                />
+                                    className={styles[modalConfig.style]}
+                                >
+                                    {timeOptions.map(t => (<option key={t} value={t}>{t}</option>))}
+                                </select>
                             </div>
+
                             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                                <label className={`${styles[modalConfig.style]}`} htmlFor="end-date">
-                                    Horário de Término
-                                </label>
-                                <input
+                                <label className={`${styles[modalConfig.style]}`} htmlFor="end-date">Horário de Término</label>
+                                <select
                                     id="end-date"
-                                    type="time"
-                                    step="900"
                                     value={formData.endDate.toTimeString().slice(0, 5)}
                                     onChange={handleEndTimeChange}
-                                />
+                                    className={styles[modalConfig.style]}
+                                >
+                                    {timeOptions.map(t => (<option key={t} value={t}>{t}</option>))}
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -261,11 +274,11 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                     <h3 className={`${styles.modalSubtitle} ${styles[modalConfig.style]}`}>Lista de Materiais</h3>
 
                     { !isLoading.materialSets && !isLoading.materials ? (
-                    <>
-                        <div className={styles.materialSetContainer}>{renderMaterialSets()}</div>
-                        <div className={styles.divisionLine}></div>
-                        <ul className={styles.materialList}>{renderMaterialsList()}</ul>
-                    </>
+                        <>
+                            <div className={styles.materialSetContainer}>{renderMaterialSets()}</div>
+                            <div className={styles.divisionLine}></div>
+                            <ul className={styles.materialList}>{renderMaterialsList()}</ul>
+                        </>
                     ) : ( <Spinner /> )}
 
                     <div className={styles.actionsContainer}>

@@ -73,7 +73,7 @@
         &.red { color: var(--red-alert) }
     }
 
-    input {
+    input, select {
         flex: 1;
         padding: 1.2rem 1.6rem;
         border-radius: 8px;
@@ -87,7 +87,9 @@
 }
 
 .modalSubtitle {
-    margin: 1.6rem auto 1rem auto;
+    margin: 1.6rem auto;
+    font-size: 1.8rem;
+    line-height: 2rem;
 
     &.blue { color: var(--deep-blue) }
     &.green { color: var(--dark-moss-green) }
@@ -96,6 +98,7 @@
 .materialSetContainer {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
 
     .materialSet {

@@ -46,10 +46,13 @@ const MaterialSets = () => {
         switch (modalAction) {
             case "NEW":
                 return <MaterialSetModal onClose={closeModal} />
+
             case "EDIT":
                 return <MaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
+
             case "DELETE":
                 return <DeleteMaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
+                
             default:
                 return null
         }

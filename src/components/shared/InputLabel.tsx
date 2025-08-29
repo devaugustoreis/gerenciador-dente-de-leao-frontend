@@ -12,6 +12,7 @@ const labelStyle: React.CSSProperties = {
 
 interface InputLabelProps {
     label: string;
+    labelAlignment?: React.CSSProperties["textAlign"];
     inputType?: string;
     inputPlaceholder?: string;
     inputValue?: string | number;
@@ -20,7 +21,7 @@ interface InputLabelProps {
 }
 
 
-const InputLabel = ({ label, inputType = "text", inputPlaceholder = "", inputValue, color = "blue", onChange}: InputLabelProps) => {
+const InputLabel = ({ label, labelAlignment = "left", inputType = "text", inputPlaceholder = "", inputValue, color = "blue", onChange}: InputLabelProps) => {
     const inputId = `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
     let labelColor = { color: "var(--deep-blue)" }
 
@@ -30,7 +31,7 @@ const InputLabel = ({ label, inputType = "text", inputPlaceholder = "", inputVal
 
     return (
         <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-            <label style={{...labelStyle, ...labelColor}} htmlFor={inputId}>{ label }</label>
+            <label style={{...labelStyle, ...labelColor, textAlign: labelAlignment}} htmlFor={inputId}>{ label }</label>
             <CustomInput id={inputId} type={inputType} placeholder={inputPlaceholder} value={inputValue} onChange={onChange} />
         </div>
     )

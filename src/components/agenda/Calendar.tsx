@@ -109,24 +109,18 @@ const Calendar = ({ openModal }: CalendarProps) => {
     const renderEventContent = (arg: any) => {
         const appointment = appointments.find(appointment => appointment.consultationId === arg.event.id)
         return (
-            <div className="fc-event-main">
-                <div className="fc-event-main-frame" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className={styles.event}>
+                <div className={styles.eventContent}>
                     <div className="fc-event-time">{arg.timeText}</div>
-                    <div className="fc-event-title-container" style={{ display: 'flex', alignItems: 'center' }}>
-                        <div className="fc-event-title fc-sticky">{arg.event.title}</div>
-                        {appointment && (
-                            <button
-                                className={styles.eventDeleteBtn}
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    openModal("DELETE", appointment)
-                                }}
-                            >
-                                X
-                            </button>
-                        )}
-                    </div>
+                    <div className="fc-event-title fc-sticky">{arg.event.title}</div>
                 </div>
+                {appointment && (
+                    <div className={styles.eventDeleteStrip} onClick={(e) => {e.stopPropagation();openModal("DELETE", appointment);}} title="Excluir agendamento">
+                        <svg className={styles.eventDeleteIcon} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                )}
             </div>
         )
     }

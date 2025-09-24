@@ -1,5 +1,4 @@
 import api from "@/services/api";
-import { formatDate } from "./utils";
 import Appointment from "@/models/appointments/appointment.model";
 
 

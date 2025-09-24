@@ -19,22 +19,44 @@
 /* Eventos */
 .event {
     width: 100%;
-	display: flex;
-	justify-content: space-between;
-    align-items: center;
-    padding: 0 2px;
+    display: flex;
+    align-items: stretch; 
+    padding: 0;
     background-color: var(--deep-blue);
     color: #fff;
     border: none;
     border-radius: 6px;
     cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.2s;
 }
 
-.eventDeleteBtn {
-    background: transparent;
-    border: none;
-    color: #fff;
+.event:hover {
+    background-color: var(--light-blue);
+}
+
+.eventContent {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4px;
+}
+
+.eventDeleteStrip {
+    width: 20%;
+    background-color: var(--red-alert);
     cursor: pointer;
-    font-weight: bold;
-    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.eventDeleteStrip:hover {
+    background-color: var(--red-alert-hover);
+}
+
+.eventDeleteIcon {
+    pointer-events: none;
 }

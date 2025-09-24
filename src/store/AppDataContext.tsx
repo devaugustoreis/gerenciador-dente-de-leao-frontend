@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { getAppointments } from '@/services/appointmentService'
 import { getMaterials } from '@/services/materialService'
 import { getMaterialSets } from '@/services/materialSetService'
@@ -24,7 +24,7 @@ type AppData = {
 
 	refreshMaterials: () => Promise<void>
 	refreshMaterialSets: () => Promise<void>
-	refreshAppointments: () => Promise<void>
+	refreshAppointments: (startDate: string, endDate: string) => Promise<void>
 }
 
 const AppDataContext = createContext<AppData | undefined>(undefined)
@@ -54,7 +54,6 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 
 	const setAppointments = (data: Appointment[]) => {
 		_setAppointments(data)
-		localStorage.setItem('appointments', JSON.stringify(data))
 	}
 
 	const fetchMaterials = async () => {
@@ -83,23 +82,22 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 	}
 
-	const fetchAppointments = async () => {
+	const fetchAppointments = useCallback(async (startDate: string, endDate: string) => {
 		setIsLoading(prev => ({ ...prev, appointments: true }))
-		
+
 		try {
-			const data = await getAppointments()
+			const data = await getAppointments(startDate, endDate)
 			setAppointments(data)
 		} catch (error) {
 			console.error('Erro ao buscar consultas:', error)
 		} finally {
 			setIsLoading(prev => ({ ...prev, appointments: false }))
 		}
-	}
+	}, [])
 
 	useEffect(() => {
 		const lsMaterials = localStorage.getItem('materials')
 		const lsMaterialSets = localStorage.getItem('materialSets')
-		const lsAppointments = localStorage.getItem('appointments')
 
 		if (lsMaterials) {
 			_setMaterials(JSON.parse(lsMaterials))
@@ -113,13 +111,6 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 			setIsLoading(prev => ({ ...prev, materialSets: false }))
 		} else {
 			fetchMaterialSets()
-		}
-
-		if (lsAppointments) {
-			_setAppointments(JSON.parse(lsAppointments))
-			setIsLoading(prev => ({ ...prev, appointments: false }))
-		} else {
-			fetchAppointments()
 		}
 	}, [])
 

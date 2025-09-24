@@ -4,7 +4,7 @@ import MaterialSetModel from "@/models/material-sets/material-set.model"
 import SectionHeader from "@/components/shared/SectionHeader"
 import MaterialSet from "@/components/material-sets/MaterialSet"
 import MaterialSetModal from "@/components/material-sets/modals/MaterialSetModal"
-import DeleteMaterialSetModal from "@/components/material-sets/modals/DeleteMaterialSetModal"
+import DeleteModal from "@/components/shared/DeleteModal"
 import Spinner from "@/components/shared/Spinner"
 
 
@@ -51,7 +51,7 @@ const MaterialSets = () => {
                 return <MaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
 
             case "DELETE":
-                return <DeleteMaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
+                return <DeleteModal type="material set" element={selectedMaterialSet!} onClose={closeModal} />
                 
             default:
                 return null

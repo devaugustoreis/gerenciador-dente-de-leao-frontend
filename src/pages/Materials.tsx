@@ -4,7 +4,7 @@ import SectionHeader from "@/components/shared/SectionHeader"
 import MaterialCard from "@/components/materials/MaterialCard"
 import MaterialModal from "@/components/materials/modals/MaterialModal"
 import MaterialStockModal from "@/components/materials/modals/MaterialStockModal"
-import DeleteMaterialModal from "@/components/materials/modals/DeleteMaterialModal"
+import DeleteModal from "@/components/shared/DeleteModal"
 import Spinner from "@/components/shared/Spinner"
 import MaterialItemModel from "@/models/materials/material-item.model"
 
@@ -52,7 +52,7 @@ const Materials = () => {
                 return <MaterialStockModal action="remove" material={selectedMaterial!} onClose={closeModal} />
 
             case "DELETE":
-                return <DeleteMaterialModal material={selectedMaterial!} onClose={closeModal} />
+                return <DeleteModal type="material" element={selectedMaterial!} onClose={closeModal} />
 
             default:
                 return null

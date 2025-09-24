@@ -1,14 +1,12 @@
-import { useAppData } from "@/store/AppDataContext";
-import AppointmentModel from "@/models/appointments/appointment.model";
-import AppointmentModal from "@/components/agenda/modals/AppointmentModal";
-import Spinner from "@/components/shared/Spinner";
 import { useState } from "react";
 import Calendar from "@/components/agenda/Calendar"
+import AppointmentModel from "@/models/appointments/appointment.model";
+import AppointmentModal from "@/components/agenda/modals/AppointmentModal";
+import DeleteModal from "@/components/shared/DeleteModal";
 
 export type ModalAction = "NEW" | "EDIT" | "DELETE" | null;
 
 const Agenda = () => {
-    const { isLoading } = useAppData();
     const [ selectedAppointment, setSelectedAppointment ] = useState<AppointmentModel>(new AppointmentModel());
     const [ modalAction, setModalAction ] = useState<ModalAction>(null);
 
@@ -23,19 +21,14 @@ const Agenda = () => {
 
     const renderModal = () => {
         if (!modalAction) return null;
-        else if (modalAction === "DELETE") return <AppointmentModal appointment={selectedAppointment} onClose={closeModal} />;
+        else if (modalAction === "DELETE") return <DeleteModal type="appointment" element={selectedAppointment} onClose={closeModal} />;
 
         return <AppointmentModal appointment={selectedAppointment} onClose={closeModal} />;
     };
 
     return (
         <>
-            { isLoading.appointments ? <Spinner /> : (
-                <div>
-                    <Calendar openModal={openModal} />
-                </div>
-            )}
-
+            <Calendar openModal={openModal} />
             { renderModal() }
         </>
     );

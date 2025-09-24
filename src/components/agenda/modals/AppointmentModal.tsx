@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import toast from "react-hot-toast"
-import styles from "@/components/agenda/modals/AppointmentModal.module.css"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import CustomButton from "@/components/shared/CustomButton"
-import { createAppointment, updateAppointment } from "@/services/appointmentService"
-import Appointment, { AppointmentMaterial } from "@/models/appointments/appointment.model"
 import minusIcon from "@/assets/icons/minus.svg"
 import plusIcon from "@/assets/icons/plus.svg"
-import InputLabel from "@/components/shared/InputLabel"
 import { useAppData } from "@/store/AppDataContext"
+import styles from "@/components/agenda/modals/AppointmentModal.module.css"
 import Spinner from "@/components/shared/Spinner"
+import ModalOverlay from "@/components/shared/ModalOverlay"
+import CustomButton from "@/components/shared/CustomButton"
+import InputLabel from "@/components/shared/InputLabel"
+import { createAppointment, updateAppointment } from "@/services/appointmentService"
+import Appointment, { AppointmentMaterial } from "@/models/appointments/appointment.model"
 
 interface AppointmentModalProps {
     appointment: Appointment
@@ -17,9 +17,9 @@ interface AppointmentModalProps {
 }
 
 const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
-    const isEditing = appointment.id !== "Sem id"
+    const isEditing = appointment.consultationId !== "Sem id"
     const { isLoading, materialSets, materials, setAppointments, appointments } = useAppData()
-    const [formData, setFormData] = useState<Appointment>(new Appointment({ ...appointment }))
+    const [ formData, setFormData ] = useState<Appointment>(new Appointment({ ...appointment }))
 
     const config = {
         create: {
@@ -43,7 +43,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
     const modalConfig = isEditing ? config.update : config.create
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData, patientName: e.target.value })
+        setFormData(new Appointment({ ...formData, patientName: e.target.value }))
     }
 
     const generateTimeOptions = () => {
@@ -74,7 +74,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
 
     const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newDate = e.target.value
-        setFormData(prev => ({
+        setFormData(prev => new Appointment({
             ...prev,
             startDate: updateDatePart(prev.startDate, newDate),
             endDate: updateDatePart(prev.endDate, newDate),
@@ -83,7 +83,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
 
     const handleStartTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newTime = e.target.value
-        setFormData(prev => ({
+        setFormData(prev => new Appointment({
             ...prev,
             startDate: updateTimePart(prev.startDate, newTime),
         }))
@@ -91,7 +91,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
 
     const handleEndTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newTime = e.target.value
-        setFormData(prev => ({
+        setFormData(prev => new Appointment({
             ...prev,
             endDate: updateTimePart(prev.endDate, newTime),
         }))
@@ -99,12 +99,11 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
 
     const handleApplyMaterialSet = (materialSet: typeof materialSets[number]) => {
         setFormData(prev => {
-            const updatedMaterials = [...prev.materials]
-
+            const updatedMaterials = [...prev.materials];
             materialSet.items.forEach(setItem => {
                 const existingItem = updatedMaterials.find(item => item.materialId === setItem.material.id)
                 if (existingItem) {
-                    existingItem.quantity += setItem.quantity
+                    existingItem.quantity += setItem.quantity;
                 } else {
                     updatedMaterials.push({
                         materialId: setItem.material.id,
@@ -113,7 +112,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                 }
             })
 
-            return { ...prev, materials: updatedMaterials }
+            return new Appointment({ ...prev, materials: updatedMaterials })
         })
     }
 
@@ -130,7 +129,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                 newMaterials = [...prev.materials, { materialId: material.id, quantity: 1 }]
             }
 
-            return { ...prev, materials: newMaterials }
+            return new Appointment({ ...prev, materials: newMaterials });
         })
     }
 
@@ -148,7 +147,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                 )
             }
 
-            return { ...prev, materials: newMaterials }
+            return new Appointment({ ...prev, materials: newMaterials });
         })
     }
 
@@ -169,7 +168,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
 
             let updatedAppointments
             if (isEditing) {
-                updatedAppointments = appointments.map(appointment => (appointment.id === responseAppointment.id ? responseAppointment : appointment))
+                updatedAppointments = appointments.map(appointment => (appointment.consultationId === responseAppointment.consultationId ? responseAppointment : appointment))
             } else {
                 updatedAppointments = [...appointments, responseAppointment]
             }

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useAppData } from "@/store/AppDataContext"
 import MaterialSetModel from "@/models/material-sets/material-set.model"
 import SectionHeader from "@/components/shared/SectionHeader"
-import MaterialSet from "@/components/material-sets/MaterialSet"
+import MaterialSet from "@/components/shared/CustomAccordion"
 import MaterialSetModal from "@/components/material-sets/modals/MaterialSetModal"
 import DeleteModal from "@/components/shared/DeleteModal"
 import Spinner from "@/components/shared/Spinner"
@@ -62,7 +62,7 @@ const MaterialSets = () => {
         materialSets.map(materialSet => (
             <MaterialSet
                 key={materialSet.id}
-                materialSet={materialSet}
+                element={materialSet}
                 isOpen={openSetId === materialSet.id}
                 onToggle={handleToggle}
                 onEdit={() => openModal("EDIT", materialSet)}

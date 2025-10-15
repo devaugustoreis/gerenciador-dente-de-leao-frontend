@@ -1,7 +1,7 @@
 import { JSX } from "react"
 import toast from "react-hot-toast"
 import { useAppData } from "@/store/AppDataContext"
-import closeIcon from "@/assets/icons/close.svg"
+import excludeIcon from "@/assets/icons/excludeIcon.svg"
 import styles from "@/components/shared/DeleteModal.module.css"
 import ModalOverlay from "@/components/shared/ModalOverlay"
 import CustomButton from "@/components/shared/CustomButton"
@@ -118,7 +118,7 @@ const DeleteModal = ({ type, element, onClose }: DeleteModalProps) => {
 
                 <div className={styles.modalContent}>
                     <div className={`${styles.actionBtn} ${styles.deleteBtn}`}>
-                        <img src={closeIcon} alt="Botão fechar" />
+                        <img src={excludeIcon} alt="Ícone de exclusão" />
                     </div>
 
                     <h1 className={styles.modalMessage}>{renderMessage()}</h1>

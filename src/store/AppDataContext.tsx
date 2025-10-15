@@ -24,7 +24,7 @@ type AppData = {
 
 	refreshMaterials: () => Promise<void>
 	refreshMaterialSets: () => Promise<void>
-	refreshAppointments: (startDate: string, endDate: string) => Promise<void>
+	refreshAppointments: (startDate?: string, endDate?: string) => Promise<void>
 }
 
 const AppDataContext = createContext<AppData | undefined>(undefined)
@@ -82,11 +82,20 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 	}
 
-	const fetchAppointments = useCallback(async (startDate: string, endDate: string) => {
+	const fetchAppointments = useCallback(async (startDate?: string, endDate?: string) => {
 		setIsLoading(prev => ({ ...prev, appointments: true }))
 
 		try {
-			const data = await getAppointments(startDate, endDate)
+			const end = endDate ? new Date(endDate) : new Date()
+			const start = startDate ? new Date(startDate) : new Date(end)
+			if (!startDate) {
+				start.setDate(end.getDate() - 30)
+			}
+
+			const startDateString = start.toISOString().split('T')[0]
+			const endDateString = end.toISOString().split('T')[0]
+
+			const data = await getAppointments(startDateString, endDateString)
 			setAppointments(data)
 		} catch (error) {
 			console.error('Erro ao buscar consultas:', error)
@@ -107,7 +116,10 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 
 		if (lsMaterialSets) {
-			_setMaterialSets(JSON.parse(lsMaterialSets))
+			const parsedMaterialSets = JSON.parse(lsMaterialSets)
+			const materialSets = parsedMaterialSets.map((item: MaterialSet) => new MaterialSet(item))
+
+			_setMaterialSets(materialSets)
 			setIsLoading(prev => ({ ...prev, materialSets: false }))
 		} else {
 			fetchMaterialSets()

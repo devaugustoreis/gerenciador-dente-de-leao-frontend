@@ -11,7 +11,7 @@ export default class MaterialItem {
   stockQuantity: number;
   scheduledQuantity: number;
   alertQuantity: number;
-  expectedEndDate: Date;
+  expectedEndDate: Date | null;
 
   constructor(data: Partial<MaterialItem> = {}) {
     this.id = data.id ?? "Sem id";
@@ -21,6 +21,6 @@ export default class MaterialItem {
     this.stockQuantity = data.stockQuantity ?? 0;
     this.scheduledQuantity = data.scheduledQuantity ?? 0;
     this.alertQuantity = data.alertQuantity ?? 0;
-    this.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate) : new Date();
+    this.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate) : null;
   }
 }

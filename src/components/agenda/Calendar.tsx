@@ -111,8 +111,8 @@ const Calendar = ({ openModal }: CalendarProps) => {
         return (
             <div className={styles.event}>
                 <div className={styles.eventContent}>
-                    <div className="fc-event-time">{arg.timeText}</div>
                     <div className="fc-event-title fc-sticky">{arg.event.title}</div>
+                    <div className="fc-event-time">{arg.timeText}</div>
                 </div>
                 {appointment && (
                     <div className={styles.eventDeleteStrip} onClick={(e) => {e.stopPropagation();openModal("DELETE", appointment);}} title="Excluir agendamento">

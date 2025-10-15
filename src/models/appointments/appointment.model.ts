@@ -10,6 +10,7 @@ export default class Appointment {
     startDate: Date;
     endDate: Date;
     materials: AppointmentMaterial[];
+    concluded: boolean;
 
     constructor(data: Partial<Appointment> = {}) {
         this.consultationId = data.consultationId ?? "Sem id";
@@ -18,6 +19,7 @@ export default class Appointment {
         this.startDate = data.startDate ? new Date(data.startDate) : new Date();
         this.endDate = data.endDate ? new Date(data.endDate) : new Date(this.startDate.getTime() + 30 * 60 * 1000); 
         this.materials = data.materials ?? [];
+        this.concluded = data.concluded ?? false
     }
 
     private formatLocalDate(date: Date): string {
@@ -39,7 +41,8 @@ export default class Appointment {
             consultationTypeId: this.consultationTypeId,
             startDate: this.formatLocalDate(this.startDate),
             endDate: this.formatLocalDate(this.endDate),
-            materials: this.materials
+            materials: this.materials,
+            concluded: this.concluded
         };
     }
 }

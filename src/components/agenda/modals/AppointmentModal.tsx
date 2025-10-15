@@ -168,9 +168,11 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
 
             let updatedAppointments
             if (isEditing) {
-                updatedAppointments = appointments.map(appointment => (appointment.consultationId === responseAppointment.consultationId ? responseAppointment : appointment))
+                updatedAppointments = appointments.map(appointment => 
+                    (appointment.consultationId === responseAppointment.consultationId ? new Appointment(responseAppointment) : appointment)
+                )
             } else {
-                updatedAppointments = [...appointments, responseAppointment]
+                updatedAppointments = [...appointments, new Appointment(responseAppointment)]
             }
             setAppointments(updatedAppointments)
             onClose()
@@ -201,12 +203,14 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                     <span className={quantity > 0 ? styles[modalConfig.style] : undefined}>
                         {quantity} {material.name}
                     </span>
+
                     <button
                         className={`${styles.actionBtn} ${styles.removeQuantityBtn} ${styles[modalConfig.style]}`}
                         onClick={() => handleRemoveQuantity(material)}
                     >
                         <img src={minusIcon} alt="Botão remover unidade material" />
                     </button>
+                    
                     <button
                         className={`${styles.actionBtn} ${styles.addQuantityBtn} ${styles[modalConfig.style]}`}
                         onClick={() => handleAddQuantity(material)}

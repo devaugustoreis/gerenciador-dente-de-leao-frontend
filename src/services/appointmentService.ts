@@ -26,3 +26,8 @@ export const updateAppointment = async (appointment: Appointment): Promise<Appoi
 export const deleteAppointment = async (id: string): Promise<void> => {
 	await api.delete(`${appointmentsAPI}/${id}`);
 };
+
+
+export const concludeAppointment = async (id: string): Promise<void> => {
+	await api.delete(`${appointmentsAPI}/finalizar/${id}`);
+};

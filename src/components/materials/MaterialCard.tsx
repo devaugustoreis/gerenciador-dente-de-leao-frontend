@@ -25,7 +25,7 @@ const MaterialCard = ({ material, onDelete, onEdit, onRemoveStock, onAddStock }:
                 <h3 className={styles.materialName} title={ material.name }> { material.name }</h3>
                 <h5 className={styles.materialStockQuantity}> <b>{ material.stockQuantity }</b> unidades restantes</h5>
                 <p>Agendado: { material.scheduledQuantity } unidades</p>
-                <p>Término Previsto: {new Date(material.expectedEndDate).toLocaleDateString()}</p>
+                <p>Término Previsto: { material.expectedEndDate ? new Date(material.expectedEndDate).toLocaleDateString() : "-" }</p>
 
                 <div className={styles.actionsContainer}>
                     <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={(e) => {e.stopPropagation(); onDelete() }}>

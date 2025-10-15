@@ -13,13 +13,13 @@ export const getMaterialSets = async (): Promise<MaterialSet[]> => {
 
 export const createMaterialSet = async (materialSet: MaterialSet): Promise<MaterialSet> => {
 	const response = await api.post<MaterialSet>(materialSetAPI, materialSet);
-	return response.data;
+	return new MaterialSet(response.data);
 };
 
 
 export const updateMaterialSet = async (materialSet: MaterialSet): Promise<MaterialSet> => {
 	const response = await api.put<MaterialSet>(materialSetAPI, materialSet);
-	return response.data;
+	return new MaterialSet(response.data);
 };
 
 

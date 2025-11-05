@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import toast from "react-hot-toast"
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -21,6 +21,13 @@ interface CalendarProps {
 const Calendar = ({ openModal }: CalendarProps) => {
     const { isLoading, appointments, setAppointments, refreshAppointments } = useAppData()
     const lastRangeRef = useRef<{ startDate: string, endDate: string } | null>(null);
+    const debouncerRef = useRef<any | null>(null);
+    const [isDebouncing, setIsDebouncing] = useState(false);
+
+
+    useEffect(() => {
+        return () => clearTimeout(debouncerRef.current)
+    }, [])
 
 
     const handleEventClick = (clickInfo: any) => {
@@ -84,7 +91,12 @@ const Calendar = ({ openModal }: CalendarProps) => {
         const lastRange = lastRangeRef.current
         if (!lastRange || lastRange.startDate !== startDate || lastRange.endDate !== endDate) {
             lastRangeRef.current = { startDate, endDate }
-            refreshAppointments(startDate, endDate)
+            setIsDebouncing(true)
+            clearTimeout(debouncerRef.current)
+            debouncerRef.current = window.setTimeout(function() {
+                refreshAppointments(startDate, endDate)
+                setIsDebouncing(false)
+            }, 250)
         }
     }
 
@@ -171,7 +183,7 @@ const Calendar = ({ openModal }: CalendarProps) => {
                 eventClick={handleEventClick}
             />
 
-            {isLoading.appointments && (
+            {(isLoading.appointments || isDebouncing) && (
                 <div className={styles.spinnerDiv}>
                     <Spinner />
                 </div>

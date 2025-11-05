@@ -18,7 +18,10 @@ const MaterialCard = ({ material, onDelete, onEdit, onRemoveStock, onAddStock }:
     const imageSrc = new URL(`../../assets/images/${material.imgPath}`, import.meta.url).href;
     
     return (
-        <div className={styles.materialItem} onClick={() => onEdit()}>
+        <div 
+            className={ `${styles.materialItem} ${material.highlighted ? styles.highlighted : ''}` } 
+            onClick={() => onEdit()}
+        >
             <img src={imageSrc} alt={`Imagem de ${ material.name }`} className={styles.materialImage} />
 
             <div className={styles.materialData}>

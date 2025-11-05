@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import toast from "react-hot-toast"
 import styles from "./MaterialModal.module.css"
 import ModalOverlay from "@/components/shared/ModalOverlay"
@@ -8,6 +8,7 @@ import MaterialItem from "@/models/materials/material-item.model"
 import CreateUpdateMaterial from "@/models/materials/create-update-material"
 import { createMaterial, updateMaterial } from "@/services/materialService"
 import { useAppData } from "@/store/AppDataContext"
+import SelectLabel from "@/components/shared/SelectLabel"
 
 interface MaterialModalProps {
     material?: MaterialItem
@@ -15,8 +16,9 @@ interface MaterialModalProps {
 }
 
 const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
+    const inputRef = useRef<HTMLInputElement>(null);
     const imageSrc = new URL(`@/assets/images/material-placeholder.png`, import.meta.url).href
-    const { materials, setMaterials } = useAppData()
+    const { materialsCategories, materials, setMaterials } = useAppData()
     const isEditing = !!material
 
     const config = {
@@ -80,6 +82,10 @@ const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
         }
     }
 
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
     return (
         <>
             <ModalOverlay onClose={onClose} />
@@ -88,7 +94,26 @@ const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
                 <div className={`${styles.modalHeader} ${styles[modalConfig.style]}`}>{modalConfig.title}</div>
 
                 <div className={styles.modalContent}>
-                    <InputLabel label="Material" inputValue={formData.name} onChange={handleInputChange} color={modalConfig.style} />
+                    <div style={{display:"flex", flexDirection:"column", gap:"1rem"}}>
+                        <InputLabel 
+                            ref={inputRef}
+                            label="Material"
+                            inputPlaceholder="Nome do Material" 
+                            inputValue={formData.name} 
+                            onChange={handleInputChange} 
+                            color={modalConfig.style} 
+                        />
+                        <SelectLabel
+                            label="Categoria"
+                            options={materialsCategories.map(category => ({
+                                value: category.id,
+                                label: category.label
+                            }))}
+                            value={formData.categoryId}
+                            color={modalConfig.style}
+                            onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                        />
+                    </div>
 
                     <div className={styles.imgContainer}>
                         <img src={imageSrc} alt={`Imagem de placeholder`} className={`${styles.materialImage} ${styles[modalConfig.style]}`} />

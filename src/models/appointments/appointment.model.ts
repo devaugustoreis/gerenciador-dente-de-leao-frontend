@@ -1,6 +1,9 @@
+import MaterialItem from "../materials/material-item.model";
+
 export interface AppointmentMaterial {
-    materialId: string;
+    id: string;
     quantity: number;
+    material: MaterialItem
 }
 
 export default class Appointment {

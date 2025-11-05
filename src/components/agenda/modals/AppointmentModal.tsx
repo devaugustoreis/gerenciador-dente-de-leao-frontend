@@ -10,6 +10,7 @@ import CustomButton from "@/components/shared/CustomButton"
 import InputLabel from "@/components/shared/InputLabel"
 import { createAppointment, updateAppointment } from "@/services/appointmentService"
 import Appointment, { AppointmentMaterial } from "@/models/appointments/appointment.model"
+import SelectLabel from "@/components/shared/SelectLabel"
 
 interface AppointmentModalProps {
     appointment: Appointment
@@ -18,7 +19,7 @@ interface AppointmentModalProps {
 
 const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
     const isEditing = appointment.consultationId !== "Sem id"
-    const { isLoading, materialSets, materials, setAppointments, appointments } = useAppData()
+    const { isLoading, materialSets, materials, appointmentTypes, setAppointments, appointments } = useAppData()
     const [ formData, setFormData ] = useState<Appointment>(new Appointment({ ...appointment }))
 
     const config = {
@@ -233,6 +234,22 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                     <div className={styles.inputContainer}>
                         <div className={styles.row}>
                             <InputLabel label="Nome do Paciente" inputValue={formData.patientName} onChange={handleInputChange} color={modalConfig.style} />
+                            <SelectLabel
+                                label="Tipo de Consulta"
+                                options={appointmentTypes.map(type => ({
+                                    value: type.id,
+                                    label: type.label
+                                }))}
+                                value={formData.consultationTypeId}
+                                color={modalConfig.style}
+                                onChange={(e) => setFormData(new Appointment({ 
+                                    ...formData, 
+                                    consultationTypeId: e.target.value 
+                                }))}
+                            />
+                        </div>
+
+                        <div className={styles.row}>
                             <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
                                 <label className={`${styles[modalConfig.style]}`} htmlFor="appointment-date">
                                     Data da Consulta
@@ -245,31 +262,31 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                                     onChange={handleDateChange}
                                 />
                             </div>
-                        </div>
+                            
+                            <div style={{ display: "flex", flex: 1, gap: "2.5rem" }}>
+                                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                    <label className={`${styles[modalConfig.style]}`} htmlFor="start-date">Horário de Início</label>
+                                    <select
+                                        id="start-date"
+                                        value={formData.startDate.toTimeString().slice(0, 5)}
+                                        onChange={handleStartTimeChange}
+                                        className={styles[modalConfig.style]}
+                                    >
+                                        {timeOptions.map(t => (<option key={t} value={t}>{t}</option>))}
+                                    </select>
+                                </div>
 
-                        <div className={styles.row}>
-                            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                                <label className={`${styles[modalConfig.style]}`} htmlFor="start-date">Horário de Início</label>
-                                <select
-                                    id="start-date"
-                                    value={formData.startDate.toTimeString().slice(0, 5)}
-                                    onChange={handleStartTimeChange}
-                                    className={styles[modalConfig.style]}
-                                >
-                                    {timeOptions.map(t => (<option key={t} value={t}>{t}</option>))}
-                                </select>
-                            </div>
-
-                            <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                                <label className={`${styles[modalConfig.style]}`} htmlFor="end-date">Horário de Término</label>
-                                <select
-                                    id="end-date"
-                                    value={formData.endDate.toTimeString().slice(0, 5)}
-                                    onChange={handleEndTimeChange}
-                                    className={styles[modalConfig.style]}
-                                >
-                                    {timeOptions.map(t => (<option key={t} value={t}>{t}</option>))}
-                                </select>
+                                <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+                                    <label className={`${styles[modalConfig.style]}`} htmlFor="end-date">Horário de Término</label>
+                                    <select
+                                        id="end-date"
+                                        value={formData.endDate.toTimeString().slice(0, 5)}
+                                        onChange={handleEndTimeChange}
+                                        className={styles[modalConfig.style]}
+                                    >
+                                        {timeOptions.map(t => (<option key={t} value={t}>{t}</option>))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>

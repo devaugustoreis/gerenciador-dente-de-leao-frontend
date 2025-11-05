@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAppData } from "@/store/AppDataContext"
 import SectionHeader from "@/components/shared/SectionHeader"
 import MaterialCard from "@/components/materials/MaterialCard"
@@ -21,9 +21,13 @@ const materialItensContainerStyle: React.CSSProperties = {
 type ModalAction = "NEW" | "EDIT" | "ADD STOCK" | "REMOVE STOCK" | "DELETE" | null
 
 const Materials = () => {
-    const { materials, isLoading } = useAppData()
+    const { isLoading, materials, refreshMaterials } = useAppData()
     const [ selectedMaterial, setSelectedMaterial ] = useState<MaterialItemModel | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
+
+    useEffect(() => {
+        refreshMaterials()
+    }, [])
 
     const openModal = (action: ModalAction, material?: MaterialItemModel) => {
         setModalAction(action)

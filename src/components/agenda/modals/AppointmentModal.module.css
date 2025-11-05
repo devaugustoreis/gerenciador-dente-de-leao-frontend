@@ -57,7 +57,9 @@
 
     .row {
         display: flex;
-        column-gap: 3rem;
+        justify-content: space-between;
+
+        > * { max-width: 48%; } /* Setting all children with the "same size" */
     }
 
     label {

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAppData } from "@/store/AppDataContext"
 import MaterialSetModel from "@/models/material-sets/material-set.model"
 import SectionHeader from "@/components/shared/SectionHeader"
@@ -21,10 +21,15 @@ const MaterialSetsContainerStyle: React.CSSProperties = {
 type ModalAction = "NEW" | "EDIT" | "DELETE" | null;
 
 const MaterialSets = () => {
-    const { materialSets, isLoading } = useAppData()
+    const { isLoading, materialSets, refreshMaterials, refreshMaterialSets } = useAppData()
     const [ selectedMaterialSet, setSelectedMaterialSet ] = useState<MaterialSetModel | null>(null)
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
+
+    useEffect(() => {
+        refreshMaterials()
+        refreshMaterialSets()
+    }, [])
 
     const openModal = (action: ModalAction, materialSet?: MaterialSetModel) => {
         setModalAction(action)
@@ -74,7 +79,7 @@ const MaterialSets = () => {
         <>
             <SectionHeader title="CONJUNTOS" buttonLabel="Novo Conjunto" onClick={() => openModal("NEW")} />
 
-            { isLoading.materialSets ? <Spinner /> : (
+            { (isLoading.materialSets || isLoading.materials) ? <Spinner /> : (
                 <div style={MaterialSetsContainerStyle}>
                     {renderMaterialSets()}
                 </div>

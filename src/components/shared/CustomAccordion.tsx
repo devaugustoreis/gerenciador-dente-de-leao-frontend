@@ -1,5 +1,4 @@
 import styles from "@/components/shared/CustomAccordion.module.css"
-import { useAppData } from "@/store/AppDataContext"; 
 import AppointmentModel from "@/models/appointments/appointment.model";
 import MaterialSetModel from "@/models/material-sets/material-set.model"
 import CustomButton from "@/components/shared/CustomButton"
@@ -16,7 +15,6 @@ interface AccordionProps {
 
 
 const CustomAccordion = ({ element, isOpen, onToggle, onEdit, onDelete, onConclude }: AccordionProps) => {
-    const { materials } = useAppData();
     const materialSetContainerStyles = isOpen ? { border: '2px solid var(--moss-green)' } : {};
     const headerStyles = isOpen ? { borderBottom: '1px solid var(--gray)' } : { borderRadius: '8px' };
 
@@ -33,15 +31,14 @@ const CustomAccordion = ({ element, isOpen, onToggle, onEdit, onDelete, onConclu
         const appointmentEndTime = element.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         accordionId = element.consultationId;
-        accordionTitle = `${element.patientName} [ ${appointmentStartTime} - ${appointmentEndTime} ] - ${appointmentDate}`;
+        accordionTitle = `${appointmentDate} - ${appointmentStartTime} às ${appointmentEndTime} - ${element.patientName}`;
     }
 
     const renderMaterials = () => {
         if (element instanceof AppointmentModel) {
-            return element.materials.map(material => {
-                const materialName = materials.find(m => m.id === material.materialId)?.name;
-                return <li key={material.materialId}><span>{material.quantity} {materialName}</span></li>;
-            });
+            return element.materials.map(item => (
+                <li key={item.material.id}><span>{item.quantity} {item.material.name}</span></li>
+            ));
 
         } else if (element instanceof MaterialSetModel) {
             return element.items.map(item => (

@@ -14,6 +14,10 @@
     &:hover {
         border: 2px solid var(--dark-moss-green);
     }
+
+    &.highlighted {
+        border: 3px solid #e11919;
+    }
 }
 
 .materialImage {

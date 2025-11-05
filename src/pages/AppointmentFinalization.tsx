@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAppData } from "@/store/AppDataContext";
+import { getAppointmentsToConclude } from "@/services/appointmentService";
 import AppointmentModel from "@/models/appointments/appointment.model";
 import SectionHeader from "@/components/shared/SectionHeader";
 import Spinner from "@/components/shared/Spinner";
@@ -22,15 +22,28 @@ const appointmentsContainerStyle: React.CSSProperties = {
 type ModalAction = "EDIT" | "CONCLUDE" | "DELETE" | null;
 
 const AppointmentFinalization = () => {
-    const { isLoading, refreshAppointments, appointments } = useAppData();
+    const [ isLoading, setIsLoading ] = useState<boolean>(true)
+    const [ appointmentsToConclude, setAppointmentsToConclude] = useState<AppointmentModel[]>([])
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
-    const [ modalAction, setModalAction ] = useState<ModalAction>(null);
-    const [ selectedAppointment, setSelectedAppointment ] = useState<AppointmentModel>(new AppointmentModel());
+    const [ modalAction, setModalAction ] = useState<ModalAction>(null)
+    const [ selectedAppointment, setSelectedAppointment ] = useState<AppointmentModel>(new AppointmentModel())
+
 
     useEffect(() => {
-        refreshAppointments();
+        const fetchAppointments = async () => {
+            setIsLoading(true)
+    
+            try {
+                const data = await getAppointmentsToConclude()
+                setAppointmentsToConclude(data)
+            } catch (error) {
+                console.error('Erro ao buscar consultas:', error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchAppointments()
     }, []);
-
 
     const openModal = (action: ModalAction, appointment?: AppointmentModel) => {
         setModalAction(action)
@@ -56,7 +69,7 @@ const AppointmentFinalization = () => {
 
 
     const renderAppointments = () =>
-        appointments.map(appointment => {
+        appointmentsToConclude.map(appointment => {
             if (!appointment.concluded) return (
                 <Appointment
                     key={appointment.consultationId}
@@ -75,7 +88,7 @@ const AppointmentFinalization = () => {
         <>
             <SectionHeader title="FINALIZAR CONSULTAS" />
 
-            { isLoading.appointments ? <Spinner /> : (
+            { isLoading ? <Spinner /> : (
                 <div style={appointmentsContainerStyle}>
                     {renderAppointments()}
                 </div>

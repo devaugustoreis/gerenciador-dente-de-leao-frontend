@@ -1,15 +1,25 @@
-import api from "@/services/api";
+import api, { PageableResponse } from "@/services/api";
+import MaterialCategory from "@/models/materials/material-category.model";
 import MaterialItem from "@/models/materials/material-item.model";
 import CreateUpdateMaterial from "@/models/materials/create-update-material";
 import MovementStock from "@/models/materials/movement-stock.model";
 
 
 const materialsAPI = "/entities/material"
+const materialCategoryAPI = "/entities/category"
+
+
+export const getMaterialsCategories = async (): Promise<MaterialCategory[]> => {
+    const response = await api.get<PageableResponse<MaterialCategory>>(`${materialCategoryAPI}?page=0&size=999`);
+    const materialsCategoriesArray: MaterialCategory[] = response.data.content
+    return materialsCategoriesArray.map(category => new MaterialCategory(category.id, category.label));
+};
 
 
 export const getMaterials = async (): Promise<MaterialItem[]> => {
-	const response = await api.get<MaterialItem[]>(materialsAPI);
-	return response.data.map(material => new MaterialItem(material));
+    const response = await api.get<PageableResponse<MaterialItem>>(`${materialsAPI}?page=0&size=999&sort=name,asc`);
+    const materialsArray: MaterialItem[] = response.data.content
+    return materialsArray.map(material => new MaterialItem(material));
 };
 
 

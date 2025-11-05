@@ -12,6 +12,7 @@ export default class MaterialItem {
   scheduledQuantity: number;
   alertQuantity: number;
   expectedEndDate: Date | null;
+  highlighted: boolean;
 
   constructor(data: Partial<MaterialItem> = {}) {
     this.id = data.id ?? "Sem id";
@@ -22,5 +23,15 @@ export default class MaterialItem {
     this.scheduledQuantity = data.scheduledQuantity ?? 0;
     this.alertQuantity = data.alertQuantity ?? 0;
     this.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate) : null;
+    this.highlighted = false;
+
+    if (this.expectedEndDate) {
+      const now = new Date();
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const diffDays = (this.expectedEndDate.getTime() - now.getTime()) / msPerDay;
+      this.highlighted = diffDays < 14;
+    } else if (this.scheduledQuantity > this.stockQuantity) {
+      this.highlighted = true
+    }
   }
 }

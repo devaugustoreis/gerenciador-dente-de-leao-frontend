@@ -63,7 +63,7 @@ const Materials = () => {
                 return <MaterialStockModal action="remove" material={selectedMaterial!} onClose={closeModal} />
 
             case "DELETE":
-                return <DeleteModal type="material" element={selectedMaterial!} onClose={closeModal} />
+                return <DeleteModal element={selectedMaterial!} onClose={closeModal} />
 
             default:
                 return null

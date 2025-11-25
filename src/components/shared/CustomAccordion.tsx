@@ -30,7 +30,7 @@ const CustomAccordion = ({ element, isOpen, onToggle, onEdit, onDelete, onConclu
         const appointmentStartTime = element.startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const appointmentEndTime = element.endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        accordionId = element.consultationId;
+        accordionId = element.id;
         accordionTitle = `${appointmentDate} | ${appointmentStartTime} - ${appointmentEndTime} | ${element.patientName}`;
     }
 

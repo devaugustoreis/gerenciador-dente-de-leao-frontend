@@ -1,13 +1,13 @@
+import { useState } from "react"
 import toast from "react-hot-toast"
+import { useAppData } from "@/store/AppDataContext"
+import { movementMaterialStock } from "@/services/materialService"
+import MaterialItemModel from "@/models/materials/material-item.model"
+import MovementStock, { MovementType } from "@/models/materials/movement-stock.model"
 import styles from "@/components/materials/modals/MaterialModal.module.css"
 import ModalOverlay from "@/components/shared/ModalOverlay"
 import InputLabel from "@/components/shared/InputLabel"
 import CustomButton from "@/components/shared/CustomButton"
-import MaterialItemModel from "@/models/materials/material-item.model"
-import { useState } from "react"
-import { movementMaterialStock } from "@/services/materialService"
-import MovementStock, { MovementType } from "@/models/materials/movement-stock.model"
-import { useAppData } from "@/store/AppDataContext"
 
 interface AddMaterialModalProps {
     action: "add" | "remove"
@@ -67,11 +67,14 @@ const MaterialStockModal = ({ action, material, onClose }: AddMaterialModalProps
                 }
             )
 
-            const updatedMaterials = materials.map(mat =>
-                mat.id === material.id ? { ...mat, stockQuantity: result.stockQuantity } : mat
+            const updatedMaterials = materials.content.map(mat =>
+                mat.id === material.id ? new MaterialItemModel({ ...mat, stockQuantity: result.stockQuantity }) : mat
             )
 
-            setMaterials(updatedMaterials)
+            setMaterials({
+                content: updatedMaterials,
+                totalPages: materials.totalPages
+            })
             onClose()
             
         } catch (error) {

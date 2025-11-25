@@ -27,7 +27,7 @@ export const createAppointment = async (appointment: Appointment): Promise<Appoi
 
 
 export const updateAppointment = async (appointment: Appointment): Promise<Appointment> => {
-	const response = await api.put<Appointment>(`${appointmentsAPI}/${appointment.consultationId}`, appointment.toPayload());
+	const response = await api.put<Appointment>(`${appointmentsAPI}/${appointment.id}`, appointment.toPayload());
 	return response.data;
 };
 

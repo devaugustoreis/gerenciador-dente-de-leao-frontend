@@ -16,11 +16,6 @@ const customInputStyle: React.CSSProperties = {
     transition: "border-color 0.2s ease",
 }
 
-const focusStyle: React.CSSProperties = {
-    borderWidth: "2px",
-    borderColor: "var(--deep-blue)",
-}
-
 interface CustomInputProps {
     id?: string;
     type?: string;

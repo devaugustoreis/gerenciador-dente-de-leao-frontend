@@ -2,30 +2,29 @@ import { JSX } from "react"
 import toast from "react-hot-toast"
 import { useAppData } from "@/store/AppDataContext"
 import excludeIcon from "@/assets/icons/excludeIcon.svg"
+import { deleteMaterial } from "@/services/materialService"
+import { deleteMaterialSet } from "@/services/materialSetService"
+import { deleteAppointment } from "@/services/appointmentService"
 import styles from "@/components/shared/DeleteModal.module.css"
 import ModalOverlay from "@/components/shared/ModalOverlay"
 import CustomButton from "@/components/shared/CustomButton"
 import MaterialItem from "@/models/materials/material-item.model"
 import MaterialSet from "@/models/material-sets/material-set.model"
 import Appointment from "@/models/appointments/appointment.model"
-import { deleteMaterial } from "@/services/materialService"
-import { deleteMaterialSet } from "@/services/materialSetService"
-import { deleteAppointment } from "@/services/appointmentService"
 
 interface DeleteModalProps {
-    type: string
     element: MaterialItem | MaterialSet | Appointment
     onClose: () => void
 }
 
-const DeleteModal = ({ type, element, onClose }: DeleteModalProps) => {
+const DeleteModal = ({ element, onClose }: DeleteModalProps) => {
     let modalHeader: string = ""
     let renderMessage: () => JSX.Element = () => <>Você realmente deseja excluir?</>;
-    let handleDelete: () => void
+    let handleDelete: () => void = () => null
 
 
     // Deleting Material
-    if (type === "material") {
+    if (element instanceof MaterialItem) {
         const { materials, setMaterials } = useAppData()
 
         modalHeader = "Excluir Material"
@@ -42,8 +41,8 @@ const DeleteModal = ({ type, element, onClose }: DeleteModalProps) => {
                     }
                 )
 
-                const updatedMaterials = materials.filter(mat => mat.id !== element.id)
-                setMaterials(updatedMaterials)
+                const updatedMaterials = materials.content.filter(mat => mat.id !== element.id)
+                setMaterials({ content: updatedMaterials, totalPages: materials.totalPages})
                 onClose()
 
             } catch (error) {
@@ -52,7 +51,7 @@ const DeleteModal = ({ type, element, onClose }: DeleteModalProps) => {
         }
 
     // Deleting Material Set
-    } else if (type === "material set") {
+    } else if (element instanceof MaterialSet) {
         const { materialSets, setMaterialSets } = useAppData()
 
         modalHeader = "Excluir Conjunto"
@@ -68,8 +67,8 @@ const DeleteModal = ({ type, element, onClose }: DeleteModalProps) => {
                         error: "Ocorreu um erro ao excluir o conjunto!"
                     }
                 )
-                const updatedMaterialSets = materialSets.filter(matSet => matSet.id !== element.id)
-                setMaterialSets(updatedMaterialSets)
+                const updatedMaterialSets = materialSets.content.filter(matSet => matSet.id !== element.id)
+                setMaterialSets({ content: updatedMaterialSets, totalPages: materialSets.totalPages })
                 onClose()
 
             } catch (error) {
@@ -78,7 +77,7 @@ const DeleteModal = ({ type, element, onClose }: DeleteModalProps) => {
         }
 
     // Deleting Appointment
-    } else if (type === "appointment") {
+    } else if (element instanceof Appointment) {
         const { appointments, setAppointments } = useAppData()
 
         modalHeader = "Excluir Consulta"
@@ -87,14 +86,14 @@ const DeleteModal = ({ type, element, onClose }: DeleteModalProps) => {
         handleDelete = async () => {
             try {
                 await toast.promise(
-                    deleteAppointment(element.consultationId),
+                    deleteAppointment(element.id),
                     {
                         loading: "Excluindo consulta...",
                         success: "A consulta foi excluída com sucesso!",
                         error: "Ocorreu um erro ao excluir a consulta!"
                     }
                 )
-                const updatedAppointments = appointments.filter(appointment => appointment.consultationId !== element.consultationId)
+                const updatedAppointments = appointments.filter(appointment => appointment.id !== element.id)
                 setAppointments(updatedAppointments)
                 onClose()
 

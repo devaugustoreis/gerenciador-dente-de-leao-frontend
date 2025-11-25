@@ -63,7 +63,7 @@ const MaterialSets = () => {
                 return <MaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
 
             case "DELETE":
-                return <DeleteModal type="material set" element={selectedMaterialSet!} onClose={closeModal} />
+                return <DeleteModal element={selectedMaterialSet!} onClose={closeModal} />
                 
             default:
                 return null

@@ -21,7 +21,7 @@ const Agenda = () => {
 
     const renderModal = () => {
         if (!modalAction) return null;
-        else if (modalAction === "DELETE") return <DeleteModal type="appointment" element={selectedAppointment} onClose={closeModal} />;
+        else if (modalAction === "DELETE") return <DeleteModal element={selectedAppointment} onClose={closeModal} />;
 
         return <AppointmentModal appointment={selectedAppointment} onClose={closeModal} />;
     };

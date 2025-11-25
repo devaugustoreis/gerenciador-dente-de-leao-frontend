@@ -7,10 +7,10 @@ import interactionPlugin from '@fullcalendar/interaction'
 import styles from './Calendar.module.css';
 import { useAppData } from "@/store/AppDataContext"
 import { formatDate } from '@/services/utils'
-import Spinner from '@/components/shared/Spinner'
+import { updateAppointment } from '@/services/appointmentService'
 import { ModalAction } from '@/pages/Agenda'
 import Appointment from '@/models/appointments/appointment.model'
-import { updateAppointment } from '@/services/appointmentService'
+import Spinner from '@/components/shared/Spinner'
 
 
 interface CalendarProps {
@@ -31,7 +31,7 @@ const Calendar = ({ openModal }: CalendarProps) => {
 
 
     const handleEventClick = (clickInfo: any) => {
-        const selectedAppointment = appointments.find(a => a.consultationId === clickInfo.event.id)
+        const selectedAppointment = appointments.find(a => a.id === clickInfo.event.id)
         if (selectedAppointment) {
             openModal("EDIT", selectedAppointment)
         }
@@ -59,7 +59,7 @@ const Calendar = ({ openModal }: CalendarProps) => {
     const handleEventDropAndResize = async (info: any) => {
         try {
             const { event } = info
-            const changedAppointment = appointments.find(a => a.consultationId === event.id)
+            const changedAppointment = appointments.find(a => a.id === event.id)
             if (!changedAppointment) return
 
             changedAppointment.startDate = event.start
@@ -72,7 +72,7 @@ const Calendar = ({ openModal }: CalendarProps) => {
             })
 
             let updatedAppointments = appointments.map(appointment => 
-                (appointment.consultationId === responseAppointment.consultationId ? responseAppointment : appointment)
+                (appointment.id === responseAppointment.id ? responseAppointment : appointment)
             )
             
             setAppointments(updatedAppointments)
@@ -110,7 +110,7 @@ const Calendar = ({ openModal }: CalendarProps) => {
 
     const renderEvents = () => {
         return appointments.map(appointment => ({
-            id: appointment.consultationId,
+            id: appointment.id,
             title: appointment.patientName,
             start: appointment.startDate,
             end: appointment.endDate
@@ -119,7 +119,7 @@ const Calendar = ({ openModal }: CalendarProps) => {
 
 
     const renderEventContent = (arg: any) => {
-        const appointment = appointments.find(appointment => appointment.consultationId === arg.event.id)
+        const appointment = appointments.find(appointment => appointment.id === arg.event.id)
         return (
             <div className={styles.event}>
                 <div className={styles.eventContent}>

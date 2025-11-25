@@ -1,5 +1,11 @@
 import MaterialItem from "../materials/material-item.model";
 
+export enum AppointmentStatus {
+    SCHEDULED = "SCHEDULED",
+    CONCLUDED = "CONCLUDED",
+    CANCELED = "CANCELED"
+}
+
 export interface AppointmentMaterial {
     id: string;
     quantity: number;
@@ -7,22 +13,22 @@ export interface AppointmentMaterial {
 }
 
 export default class Appointment {
-    consultationId: string;
+    id: string;
     patientName: string;
     consultationTypeId: string;
     startDate: Date;
     endDate: Date;
     materials: AppointmentMaterial[];
-    concluded: boolean;
+    status: AppointmentStatus;
 
     constructor(data: Partial<Appointment> = {}) {
-        this.consultationId = data.consultationId ?? "Sem id";
+        this.id = data.id ?? "";
         this.patientName = data.patientName ?? "";
         this.consultationTypeId = data.consultationTypeId ?? "313a95ce-af15-55d3-9403-eed37e8d2bef";
         this.startDate = data.startDate ? new Date(data.startDate) : new Date();
         this.endDate = data.endDate ? new Date(data.endDate) : new Date(this.startDate.getTime() + 30 * 60 * 1000); 
         this.materials = data.materials ?? [];
-        this.concluded = data.concluded ?? false
+        this.status = data.status ?? AppointmentStatus.SCHEDULED;
     }
 
     private formatLocalDate(date: Date): string {
@@ -39,13 +45,13 @@ export default class Appointment {
 
     toPayload() {
         return {
-            consultationId: this.consultationId,
+            id: this.id,
             patientName: this.patientName,
             consultationTypeId: this.consultationTypeId,
             startDate: this.formatLocalDate(this.startDate),
             endDate: this.formatLocalDate(this.endDate),
             materials: this.materials,
-            concluded: this.concluded
+            status: this.status
         };
     }
 }

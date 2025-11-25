@@ -15,14 +15,14 @@ interface MaterialItemProps {
 
 
 const MaterialCard = ({ material, onDelete, onEdit, onRemoveStock, onAddStock }: MaterialItemProps) => {
-    const imageSrc = new URL(`../../assets/images/${material.imgPath}`, import.meta.url).href;
-    
     return (
         <div 
-            className={ `${styles.materialItem} ${material.highlighted ? styles.highlighted : ''}` } 
+            className={ `${styles.materialItem} ${material.highlight ? styles.highlight : ''}` } 
             onClick={() => onEdit()}
         >
-            <img src={imageSrc} alt={`Imagem de ${ material.name }`} className={styles.materialImage} />
+            <div className={styles.imageContainer}>
+                <img src={material.imageSrc} alt={`Imagem de ${ material.name }`} className={styles.materialImage} />
+            </div>
 
             <div className={styles.materialData}>
                 <h3 className={styles.materialName} title={ material.name }> { material.name }</h3>

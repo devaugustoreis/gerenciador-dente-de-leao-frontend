@@ -1,15 +1,15 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import styles from "./MaterialSetModal.module.css"
+import { useAppData } from "@/store/AppDataContext"
 import ModalOverlay from "@/components/shared/ModalOverlay"
+import CustomInput from "@/components/shared/CustomInput"
 import CustomButton from "@/components/shared/CustomButton"
 import { createMaterialSet, updateMaterialSet } from "@/services/materialSetService"
 import MaterialSet, { MaterialSetItem } from "@/models/material-sets/material-set.model"
 import MaterialItemModel from "@/models/materials/material-item.model"
-import CustomInput from "@/components/shared/CustomInput"
 import minusIcon from "@/assets/icons/minus.svg"
 import plusIcon from "@/assets/icons/plus.svg"
-import { useAppData } from "@/store/AppDataContext"
 
 interface MaterialSetModalProps {
     materialSet?: MaterialSet
@@ -17,6 +17,7 @@ interface MaterialSetModalProps {
 }
 
 const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
+    const inputRef = useRef<HTMLInputElement>(null);
     const isEditing = !!materialSet
     const { materials, materialSets, setMaterialSets } = useAppData()
     const [ formData, setFormData ] = useState<MaterialSet>(materialSet ? new MaterialSet({ ...materialSet }) : new MaterialSet())
@@ -84,7 +85,7 @@ const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
     const handleSave = async () => {
         const action = isEditing ? updateMaterialSet(formData) : createMaterialSet(formData)
         try {
-            const resMaterialSet = await toast.promise(
+            const responseMaterialSet = await toast.promise(
                 action,
                 {
                     loading: modalConfig.loadingToast,
@@ -94,10 +95,13 @@ const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
             )
 
             const updatedMaterialSets = isEditing
-                ? materialSets.map(materialSet => materialSet.id === resMaterialSet.id ? resMaterialSet : materialSet)
-                : [...materialSets, resMaterialSet]
+                ? materialSets.content.map(materialSet => materialSet.id === responseMaterialSet.id ? responseMaterialSet : materialSet)
+                : [...materialSets.content, responseMaterialSet]
 
-            setMaterialSets(updatedMaterialSets)
+            setMaterialSets({
+                content: updatedMaterialSets,
+                totalPages: materialSets.totalPages
+            })
             onClose()
 
         } catch (error) {
@@ -106,7 +110,7 @@ const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
     }
 
     const renderMaterialsList = () => {
-        return materials.map(material => {
+        return materials.content.map(material => {
             const quantity = getMaterialQuantity(material.id)
             return (
                 <li key={material.id}>
@@ -128,6 +132,10 @@ const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
         })
     }
 
+    useEffect(() => {
+        inputRef.current?.focus();
+    }, []);
+
     return (
         <>
             <ModalOverlay onClose={onClose} />
@@ -138,10 +146,17 @@ const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
                 <div className={styles.modalContent}>
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <label className={`${styles.modalLabel} ${styles[modalConfig.style]}`}>Nome do Conjunto: </label>
-                        <CustomInput type="text" placeholder="Consulta Básica" value={formData.label} onChange={handleInputChange} />
+                        <CustomInput 
+                            type="text"
+                            placeholder="Nome Conjunto"
+                            ref={inputRef}
+                            value={formData.label} 
+                            onChange={handleInputChange}
+                            focusColor={isEditing ? "var(--dark-moss-green)" : "var(--deep-blue)"}
+                        />
                     </div>
 
-                    { materials.length > 0 && <div className={styles.divisionLine}></div> }
+                    { materials.content.length > 0 && <div className={styles.divisionLine}></div> }
                     <ul className={styles.materialList}>
                         {renderMaterialsList()}
                     </ul>

@@ -1,4 +1,4 @@
-import api, { PageableResponse } from "@/services/api";
+import api, { Pageable, PageableQueryParams } from "@/services/api";
 import Appointment from "@/models/appointments/appointment.model";
 import AppointmentType from "@/models/appointments/appointment-type.model";
 
@@ -8,7 +8,7 @@ const appointmentTypeAPI = "/entities/consultation-type"
 
 
 export const getAppointmentTypes = async (): Promise<AppointmentType[]> => {
-	const response = await api.get<PageableResponse<AppointmentType>>(`${appointmentTypeAPI}?page=0&size=999`);
+	const response = await api.get<Pageable<AppointmentType>>(`${appointmentTypeAPI}?page=0&size=999`);
 	const appointmentTypesArray: AppointmentType[] = response.data.content
 	return appointmentTypesArray.map(type => new AppointmentType(type.id, type.label));
 };
@@ -38,10 +38,14 @@ export const deleteAppointment = async (id: string): Promise<void> => {
 
 
 // This endpoint only fetchs appointments which have concluded = false and endDate prior to current date.
-export const getAppointmentsToConclude = async (): Promise<Appointment[]> => {
-    const response = await api.get<PageableResponse<Appointment>>(`${appointmentsAPI}/concluded-false?sort=startDate,desc`);
-	const appointmentsArray: Appointment[] = response.data.content
-    return appointmentsArray.map(appointment => new Appointment(appointment));
+export const getAppointmentsToConclude = async (queryParams?: PageableQueryParams): Promise<Pageable<Appointment>> => {
+	const defaultParams = { page: 0, size: 999, sort: ['startDate,desc'] }
+    const params = { ...defaultParams, ...(queryParams || {}) }
+    const response = await api.get<Pageable<Appointment>>(`${appointmentsAPI}/concluded-false`, { params });
+    return {
+		content: response.data.content.map(appointment => new Appointment(appointment)),
+		totalPages: response.data.totalPages
+	}
 };
 
 

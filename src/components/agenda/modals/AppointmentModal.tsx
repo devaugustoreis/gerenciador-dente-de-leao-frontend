@@ -3,13 +3,15 @@ import toast from "react-hot-toast"
 import minusIcon from "@/assets/icons/minus.svg"
 import plusIcon from "@/assets/icons/plus.svg"
 import { useAppData } from "@/store/AppDataContext"
+import { createAppointment, updateAppointment } from "@/services/appointmentService"
+import Appointment, { AppointmentMaterial } from "@/models/appointments/appointment.model"
+import MaterialItem from "@/models/materials/material-item.model"
+import MaterialSetModel from "@/models/material-sets/material-set.model"
 import styles from "@/components/agenda/modals/AppointmentModal.module.css"
 import Spinner from "@/components/shared/Spinner"
 import ModalOverlay from "@/components/shared/ModalOverlay"
 import CustomButton from "@/components/shared/CustomButton"
 import InputLabel from "@/components/shared/InputLabel"
-import { createAppointment, updateAppointment } from "@/services/appointmentService"
-import Appointment, { AppointmentMaterial } from "@/models/appointments/appointment.model"
 import SelectLabel from "@/components/shared/SelectLabel"
 
 interface AppointmentModalProps {
@@ -18,7 +20,7 @@ interface AppointmentModalProps {
 }
 
 const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
-    const isEditing = appointment.consultationId !== "Sem id"
+    const isEditing = appointment.id !== ""
     const { isLoading, materialSets, materials, appointmentTypes, setAppointments, appointments } = useAppData()
     const [ formData, setFormData ] = useState<Appointment>(new Appointment({ ...appointment }))
 
@@ -98,17 +100,18 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
         }))
     }
 
-    const handleApplyMaterialSet = (materialSet: typeof materialSets[number]) => {
+    const handleApplyMaterialSet = (materialSet: MaterialSetModel) => {
         setFormData(prev => {
             const updatedMaterials = [...prev.materials];
             materialSet.items.forEach(setItem => {
-                const existingItem = updatedMaterials.find(item => item.materialId === setItem.material.id)
+                const existingItem = updatedMaterials.find(item => item.id === setItem.material.id)
                 if (existingItem) {
                     existingItem.quantity += setItem.quantity;
                 } else {
                     updatedMaterials.push({
-                        materialId: setItem.material.id,
+                        id: setItem.material.id,
                         quantity: setItem.quantity,
+                        material: setItem.material
                     })
                 }
             })
@@ -117,34 +120,34 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
         })
     }
 
-    const handleAddQuantity = (material: typeof materials[number]) => {
+    const handleAddQuantity = (material: MaterialItem) => {
         setFormData(prev => {
-            const existingItem = prev.materials.find(item => item.materialId === material.id)
+            const existingItem = prev.materials.find(item => item.id === material.id)
             let newMaterials: AppointmentMaterial[]
 
             if (existingItem) {
                 newMaterials = prev.materials.map(item =>
-                    item.materialId === material.id ? { ...item, quantity: item.quantity + 1 } : item,
+                    item.id === material.id ? { ...item, quantity: item.quantity + 1 } : item,
                 )
             } else {
-                newMaterials = [...prev.materials, { materialId: material.id, quantity: 1 }]
+                newMaterials = [...prev.materials, { id: material.id, quantity: 1, material: material }]
             }
 
             return new Appointment({ ...prev, materials: newMaterials });
         })
     }
 
-    const handleRemoveQuantity = (material: typeof materials[number]) => {
+    const handleRemoveQuantity = (material: MaterialItem) => {
         setFormData(prev => {
-            const existingItem = prev.materials.find(item => item.materialId === material.id)
+            const existingItem = prev.materials.find(item => item.id === material.id)
             if (!existingItem) return prev
 
             let newMaterials: AppointmentMaterial[]
             if (existingItem.quantity <= 1) {
-                newMaterials = prev.materials.filter(item => item.materialId !== material.id)
+                newMaterials = prev.materials.filter(item => item.id !== material.id)
             } else {
                 newMaterials = prev.materials.map(item =>
-                    item.materialId === material.id ? { ...item, quantity: item.quantity - 1 } : item,
+                    item.id === material.id ? { ...item, quantity: item.quantity - 1 } : item,
                 )
             }
 
@@ -153,7 +156,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
     }
 
     const getMaterialQuantity = (materialId: string) => {
-        const item = formData.materials.find(i => i.materialId === materialId)
+        const item = formData.materials.find(i => i.id === materialId)
         return item ? item.quantity : 0
     }
 
@@ -170,7 +173,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
             let updatedAppointments
             if (isEditing) {
                 updatedAppointments = appointments.map(appointment => 
-                    (appointment.consultationId === responseAppointment.consultationId ? new Appointment(responseAppointment) : appointment)
+                    (appointment.id === responseAppointment.id ? new Appointment(responseAppointment) : appointment)
                 )
             } else {
                 updatedAppointments = [...appointments, new Appointment(responseAppointment)]
@@ -184,7 +187,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
     }
 
     const renderMaterialSets = () => {
-        return materialSets.map(materialSet => (
+        return materialSets.content.map(materialSet => (
             <div
                 key={materialSet.id}
                 className={`${styles.materialSet} ${styles[modalConfig.style]}`}
@@ -196,7 +199,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
     }
 
     const renderMaterialsList = () => {
-        return materials.map(material => {
+        return materials.content.map(material => {
             const quantity = getMaterialQuantity(material.id)
 
             return (

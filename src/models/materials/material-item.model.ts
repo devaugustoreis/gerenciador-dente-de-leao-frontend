@@ -7,31 +7,29 @@ export default class MaterialItem {
   id: string;
   name: string;
   category: Category;
-  imgPath: string;
+  image: string | null;
   stockQuantity: number;
   scheduledQuantity: number;
   alertQuantity: number;
   expectedEndDate: Date | null;
-  highlighted: boolean;
+  highlight: boolean;
 
   constructor(data: Partial<MaterialItem> = {}) {
     this.id = data.id ?? "Sem id";
     this.name = data.name ?? "";
     this.category = data.category ?? { id: "Sem id", label: "Sem categoria" };
-    this.imgPath = data.imgPath ?? "material-placeholder.png";
+    this.image = data.image ?? null;
     this.stockQuantity = data.stockQuantity ?? 0;
     this.scheduledQuantity = data.scheduledQuantity ?? 0;
     this.alertQuantity = data.alertQuantity ?? 0;
     this.expectedEndDate = data.expectedEndDate ? new Date(data.expectedEndDate) : null;
-    this.highlighted = false;
+    this.highlight = data.highlight ?? false;
+  }
 
-    if (this.expectedEndDate) {
-      const now = new Date();
-      const msPerDay = 1000 * 60 * 60 * 24;
-      const diffDays = (this.expectedEndDate.getTime() - now.getTime()) / msPerDay;
-      this.highlighted = diffDays < 14;
-    } else if (this.scheduledQuantity > this.stockQuantity) {
-      this.highlighted = true
-    }
+  // retorna uma src pronta para <img>
+  get imageSrc(): string {
+    if (!this.image) return new URL('@/assets/images/material-placeholder.png', import.meta.url).href;
+    if (this.image.startsWith('data:')) return this.image;
+    return `data:image/png;base64,${this.image}`;
   }
 }

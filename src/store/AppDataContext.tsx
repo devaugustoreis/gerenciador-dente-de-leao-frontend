@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { Pageable, PageableQueryParams } from '@/services/api'
 import { getAppointments, getAppointmentTypes } from '@/services/appointmentService'
 import { getMaterials, getMaterialsCategories } from '@/services/materialService'
 import { getMaterialSets } from '@/services/materialSetService'
@@ -7,7 +8,6 @@ import Appointment from '@/models/appointments/appointment.model'
 import MaterialSet from '@/models/material-sets/material-set.model'
 import MaterialCategory from '@/models/materials/material-category.model'
 import Material from '@/models/materials/material-item.model'
-import { sortByKey } from '@/services/utils'
 
 type AppData = {
 	isLoading: {
@@ -19,17 +19,17 @@ type AppData = {
 	}
 
 	materialsCategories: MaterialCategory[]
-	materials: Material[]
-	materialSets: MaterialSet[]
+	materials: Pageable<Material>
+	materialSets: Pageable<MaterialSet>
 	appointmentTypes: AppointmentType[]
 	appointments: Appointment[]
 
-	setMaterials: (data: Material[]) => void
-	setMaterialSets: (data: MaterialSet[]) => void
+	setMaterials: (data: Pageable<Material>) => void
+	setMaterialSets: (data: Pageable<MaterialSet>) => void
 	setAppointments: (data: Appointment[]) => void
 
-	refreshMaterials: () => Promise<void>
-	refreshMaterialSets: () => Promise<void>
+	refreshMaterials: (queryParams?: PageableQueryParams) => Promise<void>
+	refreshMaterialSets: (queryParams?: PageableQueryParams) => Promise<void>
 	refreshAppointments: (startDate?: string, endDate?: string) => Promise<void>
 }
 
@@ -44,8 +44,8 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		appointments: true
 	})
 	const [ materialsCategories, _setMaterialsCategories ] = useState<MaterialCategory[]>([])
-	const [ materials, _setMaterials ] = useState<Material[]>([])
-	const [ materialSets, _setMaterialSets ] = useState<MaterialSet[]>([])
+	const [ materials, _setMaterials ] = useState<Pageable<Material>>({ content: [], totalPages: 0 })
+	const [ materialSets, _setMaterialSets ] = useState<Pageable<MaterialSet>>({ content: [], totalPages: 0 })
 	const [ appointmentTypes, _setAppointmentTypes ] = useState<MaterialCategory[]>([])
 	const [ appointments, _setAppointments ] = useState<Appointment[]>([])
 
@@ -54,14 +54,12 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		_setMaterialsCategories(data)
 	}
 
-	const setMaterials = (data: Material[]) => {
-		const sortedMaterials = sortByKey(data, "name", "asc")
-		_setMaterials(sortedMaterials)
+	const setMaterials = (pageableMaterials: Pageable<Material>) => {
+		_setMaterials(pageableMaterials)
 	}
 
-	const setMaterialSets = (data: MaterialSet[]) => {
-		const sortedMaterialSets = sortByKey(data, "label", "asc")
-		_setMaterialSets(sortedMaterialSets)
+	const setMaterialSets = (pageableMaterialSets: Pageable<MaterialSet>) => {
+		_setMaterialSets(pageableMaterialSets)
 	}
 
 	const setAppointmentTypes = (data: AppointmentType[]) => {
@@ -85,11 +83,11 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 	}
 
-	const fetchMaterials = async () => {
+	const fetchMaterials = async (queryParams?: PageableQueryParams) => {
 		setIsLoading(prev => ({ ...prev, materials: true }))
 
 		try {
-			const data = await getMaterials()
+			const data = await getMaterials(queryParams)
 			setMaterials(data)
 		} catch (error) {
 			console.error('Erro ao buscar materiais:', error)
@@ -98,11 +96,11 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 	}
 
-	const fetchMaterialSets = async () => {
+	const fetchMaterialSets = async (queryParams?: PageableQueryParams) => {
 		setIsLoading(prev => ({ ...prev, materialSets: true }))
 
 		try {
-			const data = await getMaterialSets()
+			const data = await getMaterialSets(queryParams)
 			setMaterialSets(data)
 		} catch (error) {
 			console.error('Erro ao buscar conjuntos:', error)

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
+import { Pagination, Stack } from "@mui/material";
 import { useAppData } from "@/store/AppDataContext"
 import SectionHeader from "@/components/shared/SectionHeader"
 import MaterialCard from "@/components/materials/MaterialCard"
@@ -10,11 +11,12 @@ import MaterialItemModel from "@/models/materials/material-item.model"
 
 const materialItensContainerStyle: React.CSSProperties = {
     marginTop: "20px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-    gap: "32px",
-    maxHeight: "calc(100vh - 184px)",
-    padding: "0 6px 20px 2px",
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "28px",
+    flexWrap: "wrap",
+    maxHeight: "calc(100vh - 288px)",
+    padding: "0 2px 6px 2px",
     overflowY: "auto",
 }
 
@@ -22,12 +24,17 @@ type ModalAction = "NEW" | "EDIT" | "ADD STOCK" | "REMOVE STOCK" | "DELETE" | nu
 
 const Materials = () => {
     const { isLoading, materials, refreshMaterials } = useAppData()
+    const [ currentPage, setCurrentPage] = useState(1)
     const [ selectedMaterial, setSelectedMaterial ] = useState<MaterialItemModel | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
 
+    // 250px = Lateral Menu | 80px = Section padding on both sides. | 232px = Material Card + gap between each | *2 because 2 rows of cards 
+    const pageSize = Math.round((window.innerWidth - 250 - 80) / 232) * 2
+
     useEffect(() => {
-        refreshMaterials()
-    }, [])
+        const queryParams = { page: currentPage - 1, size: pageSize, sort: ["highlight,desc", "name,asc"] }
+        refreshMaterials(queryParams)
+    }, [currentPage])
 
     const openModal = (action: ModalAction, material?: MaterialItemModel) => {
         setModalAction(action)
@@ -63,18 +70,20 @@ const Materials = () => {
         }
     }
 
-    const renderMaterialItems = () => (
-        materials.map(material => (
-            <MaterialCard 
-                key={material.id} 
-                material={material} 
-                onEdit={() => openModal("EDIT", material)} 
-                onDelete={() => openModal("DELETE", material)}
-                onRemoveStock={() => openModal("REMOVE STOCK", material)} 
-                onAddStock={() => openModal("ADD STOCK", material)} 
-            />
-        ))
-    )
+    const renderMaterialItems = () => materials.content.map(material => (
+        <MaterialCard 
+            key={material.id} 
+            material={material} 
+            onEdit={() => openModal("EDIT", material)} 
+            onDelete={() => openModal("DELETE", material)}
+            onRemoveStock={() => openModal("REMOVE STOCK", material)} 
+            onAddStock={() => openModal("ADD STOCK", material)} 
+        />
+    ))
+
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    }
 
     return (
         <>
@@ -85,6 +94,30 @@ const Materials = () => {
                     { renderMaterialItems() }
                 </div>
             )}
+
+            <Stack spacing={2} alignItems="center" sx={{ mt: 3, position: "absolute", bottom: 0, width: "100%" }}>
+                <Pagination
+                    count={materials.totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    size="large"
+                    sx={{
+                        '& .MuiPaginationItem-root': {
+                            fontSize: '1.25rem',
+                            minWidth: '40px',
+                            height: '40px',
+                            padding: '0 8px'
+                        },
+                        '& .MuiPaginationItem-root.Mui-selected': {
+                            backgroundColor: '#21618c',
+                            color: '#ffffff'
+                        },
+                        '& .MuiPaginationItem-root.Mui-selected:hover': {
+                            backgroundColor: '#5dade2'
+                        }
+                    }}
+                />
+            </Stack>
 
             { renderModal() }
         </>

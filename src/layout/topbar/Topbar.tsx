@@ -11,11 +11,23 @@ const topBarStyle: React.CSSProperties = {
     fontSize: "2rem"
 };
 
+const currentDate = (): string => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+
+    const day = pad(now.getDate());
+    const month = pad(now.getMonth() + 1);
+    const year = now.getFullYear();
+    const hours = pad(now.getHours());
+    const minutes = pad(now.getMinutes());
+
+    return `${day}/${month}/${year} às ${hours}:${minutes}`;
+};
 
 const TopBar = () => {
     return (
         <header style={topBarStyle}>
-            CRO20623 - DRA. ALESSANDRA DA COSTA - 31/01/2025 às 09:12
+            CRO20623 - DRA. ALESSANDRA DA COSTA - {currentDate()}
         </header>
     )
 }

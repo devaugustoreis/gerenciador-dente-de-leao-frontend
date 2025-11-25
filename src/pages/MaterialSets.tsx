@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Pagination, Stack } from "@mui/material";
 import { useAppData } from "@/store/AppDataContext"
 import MaterialSetModel from "@/models/material-sets/material-set.model"
 import SectionHeader from "@/components/shared/SectionHeader"
@@ -13,8 +14,8 @@ const MaterialSetsContainerStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
     gap: "20px",
-    maxHeight: "calc(100vh - 184px)",
-    padding: "0 2px 20px 2px",
+    maxHeight: "calc(100vh - 288px)",
+    padding: "0 2px 6px",
     overflowY: "auto",
 }
 
@@ -22,14 +23,20 @@ type ModalAction = "NEW" | "EDIT" | "DELETE" | null;
 
 const MaterialSets = () => {
     const { isLoading, materialSets, refreshMaterials, refreshMaterialSets } = useAppData()
+    const [ currentPage, setCurrentPage] = useState(1)
     const [ selectedMaterialSet, setSelectedMaterialSet ] = useState<MaterialSetModel | null>(null)
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
 
+    // 60px = Topbar | 80px = Section padding on top and bottom. | 64px = Section Header | 20px = Section content margin | 64px = Pagination + margin 
+    // 76px = Material Set Accordion + gap between each 
+    const pageSize = Math.round((window.innerHeight - 60 - 80 - 64 - 20 - 64) / 76)
+
     useEffect(() => {
+        const materialSetsQueryParams = { page: currentPage - 1, size: pageSize, sort: ["label,asc"] }
         refreshMaterials()
-        refreshMaterialSets()
-    }, [])
+        refreshMaterialSets(materialSetsQueryParams)
+    }, [currentPage])
 
     const openModal = (action: ModalAction, materialSet?: MaterialSetModel) => {
         setModalAction(action)
@@ -63,17 +70,20 @@ const MaterialSets = () => {
         }
     }
 
-    const renderMaterialSets = () =>
-        materialSets.map(materialSet => (
-            <MaterialSet
-                key={materialSet.id}
-                element={materialSet}
-                isOpen={openSetId === materialSet.id}
-                onToggle={handleToggle}
-                onEdit={() => openModal("EDIT", materialSet)}
-                onDelete={() => openModal("DELETE", materialSet)}
-            />
-        ))
+    const renderMaterialSets = () => materialSets.content.map(materialSet => (
+        <MaterialSet
+            key={materialSet.id}
+            element={materialSet}
+            isOpen={openSetId === materialSet.id}
+            onToggle={handleToggle}
+            onEdit={() => openModal("EDIT", materialSet)}
+            onDelete={() => openModal("DELETE", materialSet)}
+        />
+    ))
+    
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+        setCurrentPage(page);
+    }
 
     return (
         <>
@@ -85,7 +95,31 @@ const MaterialSets = () => {
                 </div>
             )}
 
-            {renderModal()}
+            <Stack spacing={2} alignItems="center" sx={{ mt: 3, position: "absolute", bottom: 0, width: "100%" }}>
+                <Pagination
+                    count={materialSets.totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    size="large"
+                    sx={{
+                        '& .MuiPaginationItem-root': {
+                            fontSize: '1.25rem',
+                            minWidth: '40px',
+                            height: '40px',
+                            padding: '0 8px'
+                        },
+                        '& .MuiPaginationItem-root.Mui-selected': {
+                            backgroundColor: '#21618c',
+                            color: '#ffffff'
+                        },
+                        '& .MuiPaginationItem-root.Mui-selected:hover': {
+                            backgroundColor: '#5dade2'
+                        }
+                    }}
+                />
+            </Stack>
+
+            { renderModal() }
         </>
     )
 }

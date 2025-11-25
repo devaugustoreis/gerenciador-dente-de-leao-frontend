@@ -17,7 +17,6 @@ interface MaterialModalProps {
 
 const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const imageSrc = new URL(`@/assets/images/material-placeholder.png`, import.meta.url).href
     const { materialsCategories, materials, setMaterials } = useAppData()
     const isEditing = !!material
 
@@ -68,13 +67,14 @@ const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
                     error: "Ocorreu um erro ao salvar o material!"
                 }
             )
-
-            responseMaterial.imgPath = "material-placeholder.png"
-            const updatedMaterials = isEditing
-                ? materials.map(material => (material.id === responseMaterial.id ? responseMaterial : material))
-                : [...materials, responseMaterial]
-
-            setMaterials(updatedMaterials)
+            const updatedMaterials: MaterialItem[] = isEditing
+                ? materials.content.map(material => (material.id === responseMaterial.id ? new MaterialItem(responseMaterial) : material))
+                : [...materials.content, responseMaterial]
+            
+            setMaterials({
+                content: updatedMaterials, 
+                totalPages: materials.totalPages
+            })
             onClose()
 
         } catch (error) {
@@ -114,16 +114,18 @@ const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
                             onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
                         />
                     </div>
-
-                    <div className={styles.imgContainer}>
-                        <img src={imageSrc} alt={`Imagem de placeholder`} className={`${styles.materialImage} ${styles[modalConfig.style]}`} />
-                        <div>
-                            <button className={`${styles.selectImgBtn} ${styles[modalConfig.style]}`}>Selecionar Imagem</button>
-                            <p className={styles.imgDetails}>
-                                Tamanho máximo: 1mb <br />Dimensão máxima: 500x500px
-                            </p>
+                    
+                    { isEditing && (
+                        <div className={styles.imgContainer}>
+                            <img src={material.imageSrc} alt={`Imagem de placeholder`} className={`${styles.materialImage} ${styles[modalConfig.style]}`} />
+                            <div>
+                                <button className={`${styles.selectImgBtn} ${styles[modalConfig.style]}`}>Selecionar Imagem</button>
+                                <p className={styles.imgDetails}>
+                                    Tamanho máximo: 1mb <br />Dimensão máxima: 200x125px
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     <div className={styles.actionsContainer}>
                         <CustomButton label="Cancelar" actionColor={`outline-${modalConfig.style}`} onClick={onClose} />

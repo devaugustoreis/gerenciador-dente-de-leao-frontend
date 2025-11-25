@@ -14,7 +14,9 @@ const MainLayout = () => {
                 <TopBar />
 
                 <section className={styles.sectionContainer}>
-                    <Outlet />
+                    <div style={{ position: "relative", height: "100%" }}>
+                        <Outlet />
+                    </div>
                 </section>
             </div>
         </main>

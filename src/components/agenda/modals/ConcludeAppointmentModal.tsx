@@ -1,11 +1,11 @@
 import toast from "react-hot-toast"
 import concludeAppointmentIcon from "@/assets/icons/concludeAppointmentIcon.svg"
+import { useAppData } from "@/store/AppDataContext"
+import { concludeAppointment } from "@/services/appointmentService"
+import Appointment, { AppointmentStatus } from "@/models/appointments/appointment.model"
 import styles from "@/components/agenda/modals/ConcludeAppointmentModal.module.css"
 import ModalOverlay from "@/components/shared/ModalOverlay"
 import CustomButton from "@/components/shared/CustomButton"
-import Appointment from "@/models/appointments/appointment.model"
-import { concludeAppointment } from "@/services/appointmentService"
-import { useAppData } from "@/store/AppDataContext"
 
 interface ConcludeAppointmentModalProps {
     element: Appointment
@@ -17,14 +17,14 @@ const ConcludeAppointmentModal = ({ element, onClose }: ConcludeAppointmentModal
 
     const handleConclude = async () => {
         try {
-            await toast.promise(concludeAppointment(element.consultationId), {
+            await toast.promise(concludeAppointment(element.id), {
                 loading: "Finalizando consulta...",
                 success: "A consulta foi finalizada com sucesso!",
                 error: "Erro ao finalizar consulta!",
             })
 
-            element.concluded = true
-            const updatedAppointments = appointments.map(appointment => (appointment.consultationId === element.consultationId ? element : appointment))
+            element.status = AppointmentStatus.CONCLUDED
+            const updatedAppointments = appointments.map(appointment => (appointment.id === element.id ? element : appointment))
             setAppointments(updatedAppointments)
             onClose()
 

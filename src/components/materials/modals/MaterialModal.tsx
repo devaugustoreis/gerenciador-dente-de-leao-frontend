@@ -1,23 +1,25 @@
 import { useState, useEffect, useRef } from "react"
 import toast from "react-hot-toast"
 import styles from "./MaterialModal.module.css"
+import { useAppData } from "@/store/AppDataContext"
+import { PageableQueryParams } from "@/services/api"
+import { createMaterial, updateMaterial } from "@/services/materialService"
+import MaterialItem from "@/models/materials/material-item.model"
+import CreateUpdateMaterial from "@/models/materials/create-update-material"
 import ModalOverlay from "@/components/shared/ModalOverlay"
 import InputLabel from "@/components/shared/InputLabel"
 import CustomButton from "@/components/shared/CustomButton"
-import MaterialItem from "@/models/materials/material-item.model"
-import CreateUpdateMaterial from "@/models/materials/create-update-material"
-import { createMaterial, updateMaterial } from "@/services/materialService"
-import { useAppData } from "@/store/AppDataContext"
 import SelectLabel from "@/components/shared/SelectLabel"
 
 interface MaterialModalProps {
     material?: MaterialItem
+    pagination: PageableQueryParams
     onClose: () => void
 }
 
-const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
+const MaterialModal = ({ material, pagination, onClose }: MaterialModalProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const { materialsCategories, materials, setMaterials } = useAppData()
+    const { materialsCategories, refreshMaterials } = useAppData()
     const isEditing = !!material
 
     const config = {
@@ -59,7 +61,7 @@ const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
         const action = isEditing ? updateMaterial(formData) : createMaterial(formData)
 
         try {
-            const responseMaterial = await toast.promise(
+            await toast.promise(
                 action,
                 {
                     loading: modalConfig.loadingToast,
@@ -67,15 +69,9 @@ const MaterialModal = ({ material, onClose }: MaterialModalProps) => {
                     error: "Ocorreu um erro ao salvar o material!"
                 }
             )
-            const updatedMaterials: MaterialItem[] = isEditing
-                ? materials.content.map(material => (material.id === responseMaterial.id ? new MaterialItem(responseMaterial) : material))
-                : [...materials.content, responseMaterial]
-            
-            setMaterials({
-                content: updatedMaterials, 
-                totalPages: materials.totalPages
-            })
             onClose()
+            const queryParams = { ...pagination, page: pagination.page - 1 }
+            refreshMaterials(queryParams)
 
         } catch (error) {
             console.error("Erro ao salvar material:", error)

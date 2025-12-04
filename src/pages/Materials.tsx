@@ -11,10 +11,9 @@ import MaterialItemModel from "@/models/materials/material-item.model"
 
 const materialItensContainerStyle: React.CSSProperties = {
     marginTop: "20px",
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "28px",
-    flexWrap: "wrap",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
+    gap: "32px",
     maxHeight: "calc(100vh - 288px)",
     padding: "0 2px 6px 2px",
     overflowY: "auto",
@@ -24,17 +23,20 @@ type ModalAction = "NEW" | "EDIT" | "ADD STOCK" | "REMOVE STOCK" | "DELETE" | nu
 
 const Materials = () => {
     const { isLoading, materials, refreshMaterials } = useAppData()
-    const [ currentPage, setCurrentPage] = useState(1)
+    const [ pagination, setPagination ] = useState({
+        page: 1,
+        // 250px = Lateral Menu | 80px = Section padding on both sides. | 232px = Material Card + gap between each | *2 because 2 rows of cards 
+        size: Math.round((window.innerWidth - 250 - 80) / 232) * 2,
+        sort: ["highlight,desc", "name,asc"]
+    })
     const [ selectedMaterial, setSelectedMaterial ] = useState<MaterialItemModel | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
 
-    // 250px = Lateral Menu | 80px = Section padding on both sides. | 232px = Material Card + gap between each | *2 because 2 rows of cards 
-    const pageSize = Math.round((window.innerWidth - 250 - 80) / 232) * 2
 
     useEffect(() => {
-        const queryParams = { page: currentPage - 1, size: pageSize, sort: ["highlight,desc", "name,asc"] }
+        const queryParams = { ...pagination, page: pagination.page - 1 }
         refreshMaterials(queryParams)
-    }, [currentPage])
+    }, [pagination])
 
     const openModal = (action: ModalAction, material?: MaterialItemModel) => {
         setModalAction(action)
@@ -51,19 +53,19 @@ const Materials = () => {
 
         switch (modalAction) {
             case "NEW":
-                return <MaterialModal onClose={closeModal} />
+                return <MaterialModal pagination={pagination} onClose={closeModal} />
 
             case "EDIT":
-                return <MaterialModal material={selectedMaterial!} onClose={closeModal} />
+                return <MaterialModal material={selectedMaterial!} pagination={pagination} onClose={closeModal} />
 
             case "ADD STOCK":
-                return <MaterialStockModal action="add" material={selectedMaterial!} onClose={closeModal} />
+                return <MaterialStockModal action="add" material={selectedMaterial!} pagination={pagination} onClose={closeModal} />
 
             case "REMOVE STOCK":
-                return <MaterialStockModal action="remove" material={selectedMaterial!} onClose={closeModal} />
+                return <MaterialStockModal action="remove" material={selectedMaterial!} pagination={pagination} onClose={closeModal} />
 
             case "DELETE":
-                return <DeleteModal element={selectedMaterial!} onClose={closeModal} />
+                return <DeleteModal element={selectedMaterial!} pagination={pagination} onClose={closeModal} />
 
             default:
                 return null
@@ -82,7 +84,7 @@ const Materials = () => {
     ))
 
     const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
-        setCurrentPage(page);
+        setPagination(prev => ({ ...prev, page }));
     }
 
     return (
@@ -98,7 +100,7 @@ const Materials = () => {
             <Stack spacing={2} alignItems="center" sx={{ mt: 3, position: "absolute", bottom: 0, width: "100%" }}>
                 <Pagination
                     count={materials.totalPages}
-                    page={currentPage}
+                    page={pagination.page}
                     onChange={handlePageChange}
                     size="large"
                     sx={{

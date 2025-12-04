@@ -1,6 +1,7 @@
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useAppData } from "@/store/AppDataContext"
+import { PageableQueryParams } from "@/services/api"
 import { movementMaterialStock } from "@/services/materialService"
 import MaterialItemModel from "@/models/materials/material-item.model"
 import MovementStock, { MovementType } from "@/models/materials/movement-stock.model"
@@ -12,11 +13,12 @@ import CustomButton from "@/components/shared/CustomButton"
 interface AddMaterialModalProps {
     action: "add" | "remove"
     material: MaterialItemModel
+    pagination: PageableQueryParams
     onClose: () => void
 }
 
-const MaterialStockModal = ({ action, material, onClose }: AddMaterialModalProps) => {
-    const { materials, setMaterials } = useAppData()
+const MaterialStockModal = ({ action, material, pagination, onClose }: AddMaterialModalProps) => {
+    const { refreshMaterials } = useAppData()
 
     const [movement, setMovement] = useState<MovementStock>(
         new MovementStock({
@@ -58,7 +60,7 @@ const MaterialStockModal = ({ action, material, onClose }: AddMaterialModalProps
 
     const handleConfirm = async () => {
         try {
-            const result = await toast.promise(
+            await toast.promise(
                 movementMaterialStock(movement),
                 {
                     loading: config.loadingToast,
@@ -66,16 +68,9 @@ const MaterialStockModal = ({ action, material, onClose }: AddMaterialModalProps
                     error: "Ocorreu um erro ao atualizar o estoque!"
                 }
             )
-
-            const updatedMaterials = materials.content.map(mat =>
-                mat.id === material.id ? new MaterialItemModel({ ...mat, stockQuantity: result.stockQuantity }) : mat
-            )
-
-            setMaterials({
-                content: updatedMaterials,
-                totalPages: materials.totalPages
-            })
             onClose()
+            const queryParams = { ...pagination, page: pagination.page - 1 }
+            refreshMaterials(queryParams)
             
         } catch (error) {
             console.error("Erro ao movimentar estoque:", error)

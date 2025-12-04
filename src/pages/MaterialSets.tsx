@@ -23,20 +23,23 @@ type ModalAction = "NEW" | "EDIT" | "DELETE" | null;
 
 const MaterialSets = () => {
     const { isLoading, materialSets, refreshMaterials, refreshMaterialSets } = useAppData()
-    const [ currentPage, setCurrentPage] = useState(1)
+    const [ pagination, setPagination ] = useState({
+        page: 1,
+        // 60px = Topbar | 80px = Section padding on top and bottom. | 64px = Section Header | 20px = Section content margin | 64px = Pagination + margin 
+        // 76px = Material Set Accordion + gap between each  
+        size: Math.round((window.innerHeight - 60 - 80 - 64 - 20 - 64) / 76),
+        sort: ["label,asc"]
+    })
     const [ selectedMaterialSet, setSelectedMaterialSet ] = useState<MaterialSetModel | null>(null)
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
 
-    // 60px = Topbar | 80px = Section padding on top and bottom. | 64px = Section Header | 20px = Section content margin | 64px = Pagination + margin 
-    // 76px = Material Set Accordion + gap between each 
-    const pageSize = Math.round((window.innerHeight - 60 - 80 - 64 - 20 - 64) / 76)
 
     useEffect(() => {
-        const materialSetsQueryParams = { page: currentPage - 1, size: pageSize, sort: ["label,asc"] }
+        const materialSetsQueryParams = { ...pagination, page: pagination.page - 1 }
         refreshMaterials()
         refreshMaterialSets(materialSetsQueryParams)
-    }, [currentPage])
+    }, [pagination])
 
     const openModal = (action: ModalAction, materialSet?: MaterialSetModel) => {
         setModalAction(action)
@@ -57,13 +60,13 @@ const MaterialSets = () => {
 
         switch (modalAction) {
             case "NEW":
-                return <MaterialSetModal onClose={closeModal} />
+                return <MaterialSetModal pagination={pagination} onClose={closeModal} />
 
             case "EDIT":
-                return <MaterialSetModal materialSet={selectedMaterialSet!} onClose={closeModal} />
+                return <MaterialSetModal materialSet={selectedMaterialSet!} pagination={pagination} onClose={closeModal} />
 
             case "DELETE":
-                return <DeleteModal element={selectedMaterialSet!} onClose={closeModal} />
+                return <DeleteModal element={selectedMaterialSet!} pagination={pagination} onClose={closeModal} />
                 
             default:
                 return null
@@ -82,7 +85,7 @@ const MaterialSets = () => {
     ))
     
     const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
-        setCurrentPage(page);
+        setPagination(prev => ({ ...prev, page }))
     }
 
     return (
@@ -98,7 +101,7 @@ const MaterialSets = () => {
             <Stack spacing={2} alignItems="center" sx={{ mt: 3, position: "absolute", bottom: 0, width: "100%" }}>
                 <Pagination
                     count={materialSets.totalPages}
-                    page={currentPage}
+                    page={pagination.page}
                     onChange={handlePageChange}
                     size="large"
                     sx={{

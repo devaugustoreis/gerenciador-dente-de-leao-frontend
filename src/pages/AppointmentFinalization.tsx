@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pagination, Stack } from "@mui/material";
 import { Pageable } from "@/services/api";
 import { getAppointmentsToConclude } from "@/services/appointmentService";
-import AppointmentModel from "@/models/appointments/appointment.model";
+import AppointmentModel, { AppointmentStatus } from "@/models/appointments/appointment.model";
 import SectionHeader from "@/components/shared/SectionHeader";
 import Spinner from "@/components/shared/Spinner";
 import Appointment from "@/components/shared/CustomAccordion";
@@ -26,17 +26,19 @@ type ModalAction = "EDIT" | "CONCLUDE" | "DELETE" | null;
 const AppointmentFinalization = () => {
     const [ isLoading, setIsLoading ] = useState<boolean>(true)
     const [ appointmentsToConclude, setAppointmentsToConclude] = useState<Pageable<AppointmentModel>>({ content: [], totalPages: 0 })
-    const [ currentPage, setCurrentPage] = useState(1)
+    const [ pagination, setPagination ] = useState({
+        page: 1,
+        // 60px = Topbar | 80px = Section padding on top and bottom. | 64px = Section Header | 20px = Section content margin | 64px = Pagination + margin 
+        // 76px = Concluded Appointment Accordion + gap between each 
+        size: Math.round((window.innerHeight - 60 - 80 - 64 - 20 - 64) / 76),
+        sort: ["label,asc"]
+    })
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
     const [ selectedAppointment, setSelectedAppointment ] = useState<AppointmentModel>(new AppointmentModel())
 
-    // 60px = Topbar | 80px = Section padding on top and bottom. | 64px = Section Header | 20px = Section content margin | 64px = Pagination + margin 
-    // 76px = Concluded Appointment Accordion + gap between each 
-    const pageSize = Math.round((window.innerHeight - 60 - 80 - 64 - 20 - 64) / 76)
-
     useEffect(() => {
-        const queryParams = { page: currentPage - 1, size: pageSize, sort: ["startDate,desc"] }
+        const queryParams = { ...pagination, page: pagination.page - 1 }
         const fetchAppointments = async () => {
             setIsLoading(true)
     
@@ -50,7 +52,7 @@ const AppointmentFinalization = () => {
             }
         }
         fetchAppointments()
-    }, [currentPage]);
+    }, [pagination]);
 
     const openModal = (action: ModalAction, appointment?: AppointmentModel) => {
         setModalAction(action)
@@ -68,27 +70,29 @@ const AppointmentFinalization = () => {
 
     const renderModal = () => {
         if (!modalAction) return null;
-        else if (modalAction === "DELETE") return <DeleteModal element={selectedAppointment} onClose={closeModal} />
+        else if (modalAction === "DELETE") return <DeleteModal element={selectedAppointment} pagination={pagination} onClose={closeModal} />
         else if (modalAction === "CONCLUDE") return <ConcludeAppointmentModal element={selectedAppointment} onClose={closeModal} />
 
         return <AppointmentModal appointment={selectedAppointment} onClose={closeModal} />
     }
 
 
-    const renderAppointments = () => appointmentsToConclude.content.map(appointment => (
-        <Appointment
-            key={appointment.id}
-            element={appointment}
-            isOpen={openSetId === appointment.id}
-            onToggle={() => handleToggle(appointment.id)}
-            onEdit={() => openModal("EDIT", appointment)}
-            onDelete={() => openModal("DELETE", appointment)}
-            onConclude={() => openModal("CONCLUDE", appointment)}
-        />
-    ))
+    const renderAppointments = () => appointmentsToConclude.content.map(appointment => {
+        if (appointment.status === AppointmentStatus.SCHEDULED) return (
+            <Appointment
+                key={appointment.id}
+                element={appointment}
+                isOpen={openSetId === appointment.id}
+                onToggle={() => handleToggle(appointment.id)}
+                onEdit={() => openModal("EDIT", appointment)}
+                onDelete={() => openModal("DELETE", appointment)}
+                onConclude={() => openModal("CONCLUDE", appointment)}
+            />
+        )
+    })
 
     const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
-        setCurrentPage(page)
+        setPagination(prev => ({ ...prev, page }));
     }
        
     return (
@@ -104,7 +108,7 @@ const AppointmentFinalization = () => {
             <Stack spacing={2} alignItems="center" sx={{ mt: 3, position: "absolute", bottom: 0, width: "100%" }}>
                 <Pagination
                     count={appointmentsToConclude.totalPages}
-                    page={currentPage}
+                    page={pagination.page}
                     onChange={handlePageChange}
                     size="large"
                     sx={{

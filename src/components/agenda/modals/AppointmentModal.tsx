@@ -20,7 +20,7 @@ interface AppointmentModalProps {
 }
 
 const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
-    const isEditing = appointment.id !== ""
+    const isEditing = appointment.id !== "Sem id"
     const { isLoading, materialSets, materials, appointmentTypes, setAppointments, appointments } = useAppData()
     const [ formData, setFormData ] = useState<Appointment>(new Appointment({ ...appointment }))
 

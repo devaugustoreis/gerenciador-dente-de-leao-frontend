@@ -11,13 +11,16 @@ import CustomButton from "@/components/shared/CustomButton"
 import MaterialItem from "@/models/materials/material-item.model"
 import MaterialSet from "@/models/material-sets/material-set.model"
 import Appointment from "@/models/appointments/appointment.model"
+import { PageableQueryParams } from "@/services/api"
 
 interface DeleteModalProps {
     element: MaterialItem | MaterialSet | Appointment
+    pagination?: PageableQueryParams
     onClose: () => void
 }
 
-const DeleteModal = ({ element, onClose }: DeleteModalProps) => {
+const DeleteModal = ({ element, pagination, onClose }: DeleteModalProps) => {
+    const { refreshMaterials, refreshMaterialSets, refreshAppointmentsToConclude } = useAppData()
     let modalHeader: string = ""
     let renderMessage: () => JSX.Element = () => <>Você realmente deseja excluir?</>;
     let handleDelete: () => void = () => null
@@ -25,7 +28,6 @@ const DeleteModal = ({ element, onClose }: DeleteModalProps) => {
 
     // Deleting Material
     if (element instanceof MaterialItem) {
-        const { materials, setMaterials } = useAppData()
 
         modalHeader = "Excluir Material"
         renderMessage = () => <>Você realmente deseja excluir <b>{element.name}</b>?</>
@@ -40,10 +42,11 @@ const DeleteModal = ({ element, onClose }: DeleteModalProps) => {
                         error: "Ocorreu um erro ao excluir o material!"
                     }
                 )
-
-                const updatedMaterials = materials.content.filter(mat => mat.id !== element.id)
-                setMaterials({ content: updatedMaterials, totalPages: materials.totalPages})
                 onClose()
+                if (pagination) {
+                    const queryParams = { ...pagination, page: pagination.page - 1 }
+                    refreshMaterials(queryParams)
+                }
 
             } catch (error) {
                 console.error("Erro ao excluir material:", error)
@@ -52,7 +55,6 @@ const DeleteModal = ({ element, onClose }: DeleteModalProps) => {
 
     // Deleting Material Set
     } else if (element instanceof MaterialSet) {
-        const { materialSets, setMaterialSets } = useAppData()
 
         modalHeader = "Excluir Conjunto"
         renderMessage = () => <>Você realmente deseja excluir <b>{element.label}</b>?</>
@@ -67,9 +69,11 @@ const DeleteModal = ({ element, onClose }: DeleteModalProps) => {
                         error: "Ocorreu um erro ao excluir o conjunto!"
                     }
                 )
-                const updatedMaterialSets = materialSets.content.filter(matSet => matSet.id !== element.id)
-                setMaterialSets({ content: updatedMaterialSets, totalPages: materialSets.totalPages })
                 onClose()
+                if (pagination) {
+                    const queryParams = { ...pagination, page: pagination.page - 1 }
+                    refreshMaterialSets(queryParams)
+                }
 
             } catch (error) {
                 console.error("Erro ao excluir conjunto:", error)
@@ -93,8 +97,14 @@ const DeleteModal = ({ element, onClose }: DeleteModalProps) => {
                         error: "Ocorreu um erro ao excluir a consulta!"
                     }
                 )
-                const updatedAppointments = appointments.filter(appointment => appointment.id !== element.id)
-                setAppointments(updatedAppointments)
+
+                if (pagination) {
+                    const queryParams = { ...pagination, page: pagination.page - 1 }
+                    refreshAppointmentsToConclude(queryParams)
+                } else {
+                    const updatedAppointments = appointments.filter(appointment => appointment.id !== element.id)
+                    setAppointments(updatedAppointments)
+                }
                 onClose()
 
             } catch (error) {

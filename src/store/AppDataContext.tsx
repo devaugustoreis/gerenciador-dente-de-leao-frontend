@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { Pageable, PageableQueryParams } from '@/services/api'
-import { getAppointments, getAppointmentTypes } from '@/services/appointmentService'
+import { getAppointments, getAppointmentsToConclude, getAppointmentTypes } from '@/services/appointmentService'
 import { getMaterials, getMaterialsCategories } from '@/services/materialService'
 import { getMaterialSets } from '@/services/materialSetService'
 import AppointmentType from '@/models/appointments/appointment-type.model'
@@ -16,6 +16,7 @@ type AppData = {
 		materialSets: boolean
 		appointmentTypes: boolean
 		appointments: boolean
+		appointmentsToConclude: boolean
 	}
 
 	materialsCategories: MaterialCategory[]
@@ -23,14 +24,17 @@ type AppData = {
 	materialSets: Pageable<MaterialSet>
 	appointmentTypes: AppointmentType[]
 	appointments: Appointment[]
+	appointmentsToConclude: Pageable<Appointment>
 
 	setMaterials: (data: Pageable<Material>) => void
 	setMaterialSets: (data: Pageable<MaterialSet>) => void
 	setAppointments: (data: Appointment[]) => void
+	setAppointmentsToConclude: (data: Pageable<Appointment>) => void
 
 	refreshMaterials: (queryParams?: PageableQueryParams) => Promise<void>
 	refreshMaterialSets: (queryParams?: PageableQueryParams) => Promise<void>
 	refreshAppointments: (startDate?: string, endDate?: string) => Promise<void>
+	refreshAppointmentsToConclude: (queryParams?: PageableQueryParams) => Promise<void>
 }
 
 const AppDataContext = createContext<AppData | undefined>(undefined)
@@ -41,13 +45,15 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		materials: true,
 		materialSets: true,
 		appointmentTypes: true,
-		appointments: true
+		appointments: true,
+		appointmentsToConclude: true
 	})
 	const [ materialsCategories, _setMaterialsCategories ] = useState<MaterialCategory[]>([])
 	const [ materials, _setMaterials ] = useState<Pageable<Material>>({ content: [], totalPages: 0 })
 	const [ materialSets, _setMaterialSets ] = useState<Pageable<MaterialSet>>({ content: [], totalPages: 0 })
 	const [ appointmentTypes, _setAppointmentTypes ] = useState<MaterialCategory[]>([])
 	const [ appointments, _setAppointments ] = useState<Appointment[]>([])
+	const [ appointmentsToConclude, _setAppointmentsToConclude ] = useState<Pageable<Appointment>>({ content: [], totalPages: 0 })
 
 
 	const setMaterialsCategories = (data: MaterialCategory[]) => {
@@ -68,6 +74,10 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 
 	const setAppointments = (data: Appointment[]) => {
 		_setAppointments(data)
+	}
+
+	const setAppointmentsToConclude = (pageableAppointments: Pageable<Appointment>) => {
+		_setAppointmentsToConclude(pageableAppointments)
 	}
 
 	const fetchMaterialsCategories = async () => {
@@ -144,11 +154,22 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 	}, [])
 
+	const fetchAppointmentsToConclude = async (queryParams?: PageableQueryParams) => {
+		setIsLoading(prev => ({ ...prev, appointmentsToConclude: true }))
+
+		try {
+			const data = await getAppointmentsToConclude(queryParams)
+			_setAppointmentsToConclude(data)
+		} catch (error) {
+			console.error('Erro ao buscar consultas:', error)
+		} finally {
+			setIsLoading(prev => ({ ...prev, appointmentsToConclude: false }))
+		}
+	}
+
 	useEffect(() => {
 		fetchMaterialsCategories()
 		fetchAppointmentTypes()
-		fetchMaterials()
-		fetchMaterialSets()
 	}, [])
 
 	return (
@@ -156,15 +177,18 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 			materialsCategories,
 			materials,
 			materialSets,
-			appointments,
 			appointmentTypes,
+			appointments,
+			appointmentsToConclude,
 			isLoading,
 			refreshMaterials: fetchMaterials,
 			refreshMaterialSets: fetchMaterialSets,
 			refreshAppointments: fetchAppointments,
+			refreshAppointmentsToConclude: fetchAppointmentsToConclude,
 			setMaterials,
 			setMaterialSets,
 			setAppointments,
+			setAppointmentsToConclude,
 		}}>
 			{children}
 		</AppDataContext.Provider>

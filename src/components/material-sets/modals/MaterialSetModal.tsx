@@ -1,25 +1,27 @@
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import minusIcon from "@/assets/icons/minus.svg"
+import plusIcon from "@/assets/icons/plus.svg"
 import styles from "./MaterialSetModal.module.css"
 import { useAppData } from "@/store/AppDataContext"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import CustomInput from "@/components/shared/CustomInput"
-import CustomButton from "@/components/shared/CustomButton"
+import { PageableQueryParams } from "@/services/api"
 import { createMaterialSet, updateMaterialSet } from "@/services/materialSetService"
 import MaterialSet, { MaterialSetItem } from "@/models/material-sets/material-set.model"
 import MaterialItemModel from "@/models/materials/material-item.model"
-import minusIcon from "@/assets/icons/minus.svg"
-import plusIcon from "@/assets/icons/plus.svg"
+import ModalOverlay from "@/components/shared/ModalOverlay"
+import CustomInput from "@/components/shared/CustomInput"
+import CustomButton from "@/components/shared/CustomButton"
 
 interface MaterialSetModalProps {
     materialSet?: MaterialSet
+    pagination: PageableQueryParams
     onClose: () => void
 }
 
-const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
+const MaterialSetModal = ({ materialSet, pagination, onClose }: MaterialSetModalProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const isEditing = !!materialSet
-    const { materials, materialSets, setMaterialSets } = useAppData()
+    const { materials, refreshMaterialSets } = useAppData()
     const [ formData, setFormData ] = useState<MaterialSet>(materialSet ? new MaterialSet({ ...materialSet }) : new MaterialSet())
 
     const config = {
@@ -85,7 +87,7 @@ const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
     const handleSave = async () => {
         const action = isEditing ? updateMaterialSet(formData) : createMaterialSet(formData)
         try {
-            const responseMaterialSet = await toast.promise(
+            await toast.promise(
                 action,
                 {
                     loading: modalConfig.loadingToast,
@@ -93,16 +95,9 @@ const MaterialSetModal = ({ materialSet, onClose }: MaterialSetModalProps) => {
                     error: "Ocorreu um erro ao salvar o conjunto!"
                 }
             )
-
-            const updatedMaterialSets = isEditing
-                ? materialSets.content.map(materialSet => materialSet.id === responseMaterialSet.id ? responseMaterialSet : materialSet)
-                : [...materialSets.content, responseMaterialSet]
-
-            setMaterialSets({
-                content: updatedMaterialSets,
-                totalPages: materialSets.totalPages
-            })
             onClose()
+            const queryParams = { ...pagination, page: pagination.page - 1 }
+            refreshMaterialSets(queryParams)
 
         } catch (error) {
             console.error("Erro ao salvar conjunto:", error)

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Pagination, Stack } from "@mui/material";
 import { useAppData } from "@/store/AppDataContext"
 import SectionHeader from "@/components/shared/SectionHeader"
+import MaterialFilter from "@/components/materials/MaterialFilter";
 import MaterialCard from "@/components/materials/MaterialCard"
 import MaterialModal from "@/components/materials/modals/MaterialModal"
 import MaterialStockModal from "@/components/materials/modals/MaterialStockModal"
@@ -14,7 +15,7 @@ const materialItensContainerStyle: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
     gap: "32px",
-    maxHeight: "calc(100vh - 288px)",
+    maxHeight: "calc(100vh - 348px)",
     padding: "0 2px 6px 2px",
     overflowY: "auto",
 }
@@ -29,6 +30,7 @@ const Materials = () => {
         size: Math.round((window.innerWidth - 250 - 80) / 232) * 2,
         sort: ["highlight,desc", "name,asc"]
     })
+    const [ highlightEnabled, setHighlightEnabled ] = useState<boolean>(true)
     const [ selectedMaterial, setSelectedMaterial ] = useState<MaterialItemModel | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
 
@@ -37,6 +39,46 @@ const Materials = () => {
         const queryParams = { ...pagination, page: pagination.page - 1 }
         refreshMaterials(queryParams)
     }, [pagination])
+
+    const currentSort = pagination.sort.find(s => !s.startsWith('highlight')) ?? "name,asc"
+
+    const toggleHighlight = () => {
+        setHighlightEnabled(prev => {
+            const enabled = !prev
+            setPagination(prevPag => {
+                const currentFilter = prevPag.sort.find(s => !s.startsWith('highlight')) ?? "name,asc"
+                return {
+                    ...prevPag,
+                    page: 1,
+                    sort: enabled ? ["highlight,desc", currentFilter] : [currentFilter]
+                }
+            })
+            return enabled
+        })
+    }
+
+    const handleFilterChange = (filterValue: string) => {
+        setPagination(prev => ({
+            ...prev,
+            page: 1,
+            sort: highlightEnabled ? ["highlight,desc", filterValue] : [filterValue]
+        }))
+    }
+
+    const renderMaterialItems = () => materials.content.map(material => (
+        <MaterialCard 
+            key={material.id} 
+            material={material} 
+            onEdit={() => openModal("EDIT", material)} 
+            onDelete={() => openModal("DELETE", material)}
+            onRemoveStock={() => openModal("REMOVE STOCK", material)} 
+            onAddStock={() => openModal("ADD STOCK", material)} 
+        />
+    ))
+
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+        setPagination(prev => ({ ...prev, page }));
+    }
 
     const openModal = (action: ModalAction, material?: MaterialItemModel) => {
         setModalAction(action)
@@ -71,25 +113,17 @@ const Materials = () => {
                 return null
         }
     }
-
-    const renderMaterialItems = () => materials.content.map(material => (
-        <MaterialCard 
-            key={material.id} 
-            material={material} 
-            onEdit={() => openModal("EDIT", material)} 
-            onDelete={() => openModal("DELETE", material)}
-            onRemoveStock={() => openModal("REMOVE STOCK", material)} 
-            onAddStock={() => openModal("ADD STOCK", material)} 
-        />
-    ))
-
-    const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
-        setPagination(prev => ({ ...prev, page }));
-    }
-
+ 
     return (
         <>
             <SectionHeader title="MATERIAIS" buttonLabel="Novo Material" onClick={() => openModal("NEW")} />
+            
+            <MaterialFilter
+                highlightEnabled={highlightEnabled}
+                onToggleHighlight={toggleHighlight}
+                selectedFilter={currentSort}
+                onFilterChange={handleFilterChange}
+            />
             
             { isLoading.materials ? <Spinner /> : (
                 <div style={ materialItensContainerStyle }>

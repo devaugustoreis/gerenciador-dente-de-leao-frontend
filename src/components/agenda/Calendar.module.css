@@ -60,3 +60,11 @@
 .eventDeleteIcon {
     pointer-events: none;
 }
+
+.event.concluded {
+    background-color: #0b2a3f !important;
+}
+
+.event.concluded:hover {
+    background-color: #0b2a3f !important;
+}

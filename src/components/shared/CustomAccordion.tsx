@@ -37,7 +37,7 @@ const CustomAccordion = ({ element, isOpen, onToggle, onEdit, onDelete, onConclu
     const renderMaterials = () => {
         if (element instanceof AppointmentModel) {
             return element.materials.map(item => (
-                <li key={item.material.id}><span>{item.quantity} {item.material.name}</span></li>
+                <li key={item.id}><span>{item.quantity} {item.name}</span></li>
             ));
 
         } else if (element instanceof MaterialSetModel) {

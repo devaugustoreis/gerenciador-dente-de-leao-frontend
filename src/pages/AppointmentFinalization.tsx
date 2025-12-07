@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pagination, Stack } from "@mui/material";
-import { Pageable } from "@/services/api";
-import { getAppointmentsToConclude } from "@/services/appointmentService";
+import { useAppData } from "@/store/AppDataContext";
 import AppointmentModel, { AppointmentStatus } from "@/models/appointments/appointment.model";
 import SectionHeader from "@/components/shared/SectionHeader";
 import Spinner from "@/components/shared/Spinner";
@@ -24,34 +23,23 @@ const appointmentsContainerStyle: React.CSSProperties = {
 type ModalAction = "EDIT" | "CONCLUDE" | "DELETE" | null;
 
 const AppointmentFinalization = () => {
-    const [ isLoading, setIsLoading ] = useState<boolean>(true)
-    const [ appointmentsToConclude, setAppointmentsToConclude] = useState<Pageable<AppointmentModel>>({ content: [], totalPages: 0 })
+    const { isLoading, appointmentsToConclude, refreshMaterials, refreshMaterialSets, refreshAppointmentsToConclude } = useAppData()
     const [ pagination, setPagination ] = useState({
         page: 1,
         // 60px = Topbar | 80px = Section padding on top and bottom. | 64px = Section Header | 20px = Section content margin | 64px = Pagination + margin 
         // 76px = Concluded Appointment Accordion + gap between each 
         size: Math.round((window.innerHeight - 60 - 80 - 64 - 20 - 64) / 76),
-        sort: ["label,asc"]
+        sort: ["startDate,desc"]
     })
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
     const [ selectedAppointment, setSelectedAppointment ] = useState<AppointmentModel>(new AppointmentModel())
 
     useEffect(() => {
+        refreshMaterials()
+        refreshMaterialSets()
         const queryParams = { ...pagination, page: pagination.page - 1 }
-        const fetchAppointments = async () => {
-            setIsLoading(true)
-    
-            try {
-                const data = await getAppointmentsToConclude(queryParams)
-                setAppointmentsToConclude(data)
-            } catch (error) {
-                console.error('Erro ao buscar consultas:', error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        fetchAppointments()
+        refreshAppointmentsToConclude(queryParams)
     }, [pagination]);
 
     const openModal = (action: ModalAction, appointment?: AppointmentModel) => {
@@ -71,7 +59,7 @@ const AppointmentFinalization = () => {
     const renderModal = () => {
         if (!modalAction) return null;
         else if (modalAction === "DELETE") return <DeleteModal element={selectedAppointment} pagination={pagination} onClose={closeModal} />
-        else if (modalAction === "CONCLUDE") return <ConcludeAppointmentModal element={selectedAppointment} onClose={closeModal} />
+        else if (modalAction === "CONCLUDE") return <ConcludeAppointmentModal appointmentToConclude={selectedAppointment} pagination={pagination} onClose={closeModal} />
 
         return <AppointmentModal appointment={selectedAppointment} onClose={closeModal} />
     }
@@ -99,7 +87,7 @@ const AppointmentFinalization = () => {
         <>
             <SectionHeader title="FINALIZAR CONSULTAS" />
 
-            { isLoading ? <Spinner /> : (
+            { isLoading.appointmentsToConclude ? <Spinner /> : (
                 <div style={appointmentsContainerStyle}>
                     {renderAppointments()}
                 </div>

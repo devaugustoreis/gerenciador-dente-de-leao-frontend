@@ -6,11 +6,12 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import styles from './Calendar.module.css';
 import { useAppData } from "@/store/AppDataContext"
+import { ModalAction } from '@/pages/Agenda'
 import { formatDate } from '@/services/utils'
 import { updateAppointment } from '@/services/appointmentService'
-import { ModalAction } from '@/pages/Agenda'
-import Appointment from '@/models/appointments/appointment.model'
 import Spinner from '@/components/shared/Spinner'
+import Appointment from '@/models/appointments/appointment.model'
+import { AppointmentStatus } from '@/models/appointments/appointment.model'
 
 
 interface CalendarProps {
@@ -32,7 +33,7 @@ const Calendar = ({ openModal }: CalendarProps) => {
 
     const handleEventClick = (clickInfo: any) => {
         const selectedAppointment = appointments.find(a => a.id === clickInfo.event.id)
-        if (selectedAppointment) {
+        if (selectedAppointment && selectedAppointment?.status !== AppointmentStatus.CONCLUDED) {
             openModal("EDIT", selectedAppointment)
         }
     }
@@ -60,7 +61,10 @@ const Calendar = ({ openModal }: CalendarProps) => {
         try {
             const { event } = info
             const changedAppointment = appointments.find(a => a.id === event.id)
-            if (!changedAppointment) return
+            if (!changedAppointment || changedAppointment.status === AppointmentStatus.CONCLUDED) {
+                info.revert()
+                return
+            }
 
             changedAppointment.startDate = event.start
             changedAppointment.endDate = event.end
@@ -102,9 +106,25 @@ const Calendar = ({ openModal }: CalendarProps) => {
 
 
     const renderTitle = (arg: any) => {
-        const date = new Date(arg.date.year, arg.date.month)
+        const today = new Date()
+        const currentMonth = today.getMonth()
+        
+        // Início do intervalo visualizado no calendário
+        const rangeStartDate = new Date(arg.start.year, arg.start.month)
+        const rangeStartMonth = rangeStartDate.getMonth()
+        const rangeStartYear = rangeStartDate.getFullYear()
+
+        // Fim do intervalo visualizado no calendário.
+        const rangeEndDate = new Date(arg.end.year, arg.end.month)
+        const rangeEndMonth = rangeEndDate.getMonth()
+        const rangeEndYear = rangeEndDate.getFullYear()
+        
+        const monthToDisplay = (rangeEndMonth === currentMonth) ? currentMonth : rangeStartMonth
+        
+        const date = new Date(rangeEndYear, monthToDisplay)
         const monthName = date.toLocaleString("pt-BR", { month: "long" }).toUpperCase()
-        return `${monthName} - ${arg.date.year}`
+        
+        return `${monthName} - ${rangeStartYear}`
     }
 
 
@@ -120,13 +140,18 @@ const Calendar = ({ openModal }: CalendarProps) => {
 
     const renderEventContent = (arg: any) => {
         const appointment = appointments.find(appointment => appointment.id === arg.event.id)
+        const isConcluded = appointment?.status === AppointmentStatus.CONCLUDED
+        const tooltip = isConcluded ? "Esta consulta foi finalizada." : "Editar consulta"
+        
         return (
-            <div className={styles.event}>
-                <div className={styles.eventContent}>
+            <div 
+                className={`${styles.event} ${isConcluded ? styles.concluded : ''}`}
+            >
+                <div className={styles.eventContent} title={tooltip}>
                     <div className="fc-event-title fc-sticky">{arg.event.title}</div>
                     <div className="fc-event-time">{arg.timeText}</div>
                 </div>
-                {appointment && (
+                {appointment && !isConcluded && (
                     <div className={styles.eventDeleteStrip} onClick={(e) => {e.stopPropagation();openModal("DELETE", appointment);}} title="Excluir agendamento">
                         <svg className={styles.eventDeleteIcon} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="white">
                             <path d="M18 6L6 18M6 6l12 12" stroke="white" strokeWidth="2" strokeLinecap="round" />

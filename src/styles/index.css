@@ -70,3 +70,30 @@ button {
   width: 100%;
   display: flex;
 }
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 8px;
+  background-color: #fff;
+  border: 1px solid var(--deep-blue);
+  font-weight: 400;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  padding: 0.6rem 1.2rem;
+  color: var(--deep-blue);
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: var(--deep-blue);
+  color: var(--deep-blue);
+}
+
+.btn.active {
+  background-color: var(--deep-blue);
+  border-color: var(--deep-blue);
+  color: #fff;
+}

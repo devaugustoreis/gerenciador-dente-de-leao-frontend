@@ -4,7 +4,7 @@
     background-color: var(--moss-green);
 }
 
-.loginContainer {
+.loginContainer, .forgotPasswordContainer {
     position: absolute;
     top:50%;
     left: 50%;
@@ -17,6 +17,7 @@
 
 .logo {
     margin-bottom: 3rem;
+    cursor: pointer;
 }
 
 .inputContainer {
@@ -35,7 +36,9 @@
 input {
     color: #fff;
     background-color: transparent;
+    font: 1.4rem/1.8rem 'Roboto', sans-serif;
     outline: none;
+    width: 100%;
 
     &::placeholder {
         color: #fff;
@@ -72,5 +75,29 @@ input {
     align-self: flex-end;
     margin-top: 1.2rem;
     color: #fff;
-    font: medium 1.6rem/2rem 'Roboto', sans-serif;
+    font: 1.6rem/2rem 'Roboto', sans-serif;
+}
+
+/* Forgot Password */
+.forgotPasswordContainer {
+    width: fit-content;
+    height: 44.6rem;
+}
+
+.fogotPasswordLabel {
+    color: #fff;
+    font: 1.6rem/2rem 'Roboto', sans-serif;
+    margin-bottom: 1.2rem;
+}
+
+.forgotPasswordBtn {
+    width: 100%;
+    padding: 1.2rem;
+    background-color: #fff;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+
+    font: bold 1.6rem/2rem 'Roboto', sans-serif;
+    color: var(--moss-green); 
 }

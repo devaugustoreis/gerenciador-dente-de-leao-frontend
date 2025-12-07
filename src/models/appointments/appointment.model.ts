@@ -1,5 +1,3 @@
-import MaterialItem from "../materials/material-item.model";
-
 export enum AppointmentStatus {
     SCHEDULED = "SCHEDULED",
     CONCLUDED = "CONCLUDED",
@@ -9,7 +7,7 @@ export enum AppointmentStatus {
 export interface AppointmentMaterial {
     id: string;
     quantity: number;
-    material: MaterialItem
+    name: string;
 }
 
 export default class Appointment {

@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import DenteDeLeaoLogo from "@/components/login/DenteDeLeaoLogo";
 import LoginInput from "@/components/login/LoginInput";
 import styles from "./Login.module.css"
-import denteDeLeaoLogo from "@/assets/images/dente-de-leao-logo.png";
 import userIcon from "@/assets/icons/user.png"
 import lockIcon from "@/assets/icons/lock.png"
 import { login } from "@/services/authService";
@@ -31,7 +31,7 @@ const Login = () => {
     return (
         <div className={styles.background}>
             <div className={styles.loginContainer}>
-                <img src={ denteDeLeaoLogo } alt="Logo da Clínica Dente de Leão" className={styles.logo} />
+                <DenteDeLeaoLogo />
 
                 <LoginInput imgSrc={ userIcon } placeholder="USUÁRIO" value={username} onChange={e => setUsername(e.target.value)} />
                 <LoginInput imgSrc={ lockIcon } type="password" placeholder="SENHA" value={password} onChange={e => setPassword(e.target.value)} />
@@ -39,7 +39,7 @@ const Login = () => {
                 {error && <p className={styles.failedLoginMsg}>{ error }</p>}
 
                 <button className={styles.loginBtn} onClick={handleLogin}>ENTRAR</button>
-                <a className={styles.resetPassword} href="#">Esqueci minha senha</a>
+                <Link className={styles.resetPassword} to="/esqueci-minha-senha">Esqueci minha senha</Link>
             </div>
         </div>
     )

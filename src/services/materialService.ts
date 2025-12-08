@@ -10,7 +10,8 @@ const materialCategoryAPI = "/entities/category"
 
 
 export const getMaterialsCategories = async (): Promise<MaterialCategory[]> => {
-    const response = await api.get<Pageable<MaterialCategory>>(`${materialCategoryAPI}?page=0&size=999`);
+    const params = { page: 0, size: 999, sort: ['label,asc'] }
+    const response = await api.get<Pageable<MaterialCategory>>(`${materialCategoryAPI}`, { params });
     const materialsCategoriesArray: MaterialCategory[] = response.data.content
     return materialsCategoriesArray.map(category => new MaterialCategory(category.id, category.label));
 };

@@ -8,7 +8,8 @@ const appointmentTypeAPI = "/entities/consultation-type"
 
 
 export const getAppointmentTypes = async (): Promise<AppointmentType[]> => {
-	const response = await api.get<Pageable<AppointmentType>>(`${appointmentTypeAPI}?page=0&size=999`);
+	const params = { page: 0, size: 999, sort: ['label,asc'] }
+	const response = await api.get<Pageable<AppointmentType>>(`${appointmentTypeAPI}`, { params });
 	const appointmentTypesArray: AppointmentType[] = response.data.content
 	return appointmentTypesArray.map(type => new AppointmentType(type.id, type.label));
 };

@@ -7,17 +7,18 @@ import LoginInput from "@/components/login/LoginInput";
 const ForgotPassword = () => {
     const [ email, setEmail ] = useState<string>("")
     const [ error, setError ] = useState<string>("")
-    const [ successfulRequest, setSuccessfulRequest ] = useState<boolean>(false)
+    const [ successfulRequest, setSuccessfulRequest ] = useState<boolean | null>(null)
     
     const handleRequestPasswordChange = async () => {
-        setError("")
-
         try {
-            // const data = await requestPasswordChange(email)
-            setSuccessfulRequest(true)
+            // const data = await requestPasswordReset(email)
+            // setSuccessfulRequest(true)
         } catch (error: any) {
             setError(error.message)
         }
+
+        setError("Não foi possível enviar o e-mail. Por favor contate um administrador.")
+        setSuccessfulRequest(false)
     }
 
     return (
@@ -25,7 +26,9 @@ const ForgotPassword = () => {
             <div className={styles.forgotPasswordContainer}>
                 <DenteDeLeaoLogo />
 
-                { successfulRequest ? <p className={styles.fogotPasswordLabel} style={{ marginTop: "1rem" }}>Pedido de redefinição de senha bem-sucedido!</p> : 
+                { successfulRequest && <p className={styles.fogotPasswordLabel} style={{ marginTop: "1rem" }}>Pedido de redefinição de senha bem-sucedido!</p> }
+                { successfulRequest == false && <p className={styles.failedLoginMsg}>{ error }</p> }
+                { successfulRequest == null &&
                     <>
                         <p className={styles.fogotPasswordLabel}>Insira seu e-mail abaixo e lhe enviaremos um link para redefinir sua senha:</p>
                         <LoginInput imgSrc={ userIcon } placeholder="Insira seu e-mail" value={email} onChange={e => setEmail(e.target.value)} />

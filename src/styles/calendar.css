@@ -1,0 +1,29 @@
+/* FULL CALENDAR */
+.fc .fc-toolbar-title {
+  color: #21618c;
+  font-size: 4.6rem;
+  font-weight: bold;
+}
+
+.fc .fc-button {
+  background-color: #21618c;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.fc .fc-button:hover,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #5dade2;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active:focus,
+.fc .fc-button-primary:not(:disabled):active:focus {
+  box-shadow: none;
+}
+
+.fc-event-main {
+  width: 100%;
+  display: flex;
+}

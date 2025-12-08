@@ -14,8 +14,8 @@ export const getAppointmentTypes = async (): Promise<AppointmentType[]> => {
 };
 
 
-export const getAppointments = async (startDate: string, endDate: string): Promise<Appointment[]> => {
-    const response = await api.get<Appointment[]>(`${appointmentsAPI}?startDate=${startDate}&endDate=${endDate}`);
+export const getAppointments = async (startDate: string, endDate: string, signal?: AbortSignal): Promise<Appointment[]> => {
+    const response = await api.get<Appointment[]>(`${appointmentsAPI}?startDate=${startDate}&endDate=${endDate}`, { signal });
     return response.data.map(appointment => new Appointment(appointment));
 };
 
@@ -32,16 +32,16 @@ export const updateAppointment = async (appointment: Appointment): Promise<Appoi
 };
 
 
-export const deleteAppointment = async (id: string): Promise<void> => {
+export const cancelAppointment = async (id: string): Promise<void> => {
 	await api.delete(`${appointmentsAPI}/${id}`);
 };
 
 
 // This endpoint only fetchs appointments which have concluded = false and endDate prior to current date.
-export const getAppointmentsToConclude = async (queryParams?: PageableQueryParams): Promise<Pageable<Appointment>> => {
+export const getAppointmentsToConclude = async (queryParams?: PageableQueryParams, signal?: AbortSignal): Promise<Pageable<Appointment>> => {
 	const defaultParams = { page: 0, size: 999, sort: ['startDate,desc'] }
     const params = { ...defaultParams, ...(queryParams || {}) }
-    const response = await api.get<Pageable<Appointment>>(`${appointmentsAPI}/concluded-false`, { params });
+    const response = await api.get<Pageable<Appointment>>(`${appointmentsAPI}/concluded-false`, { params, signal });
     return {
 		content: response.data.content.map(appointment => new Appointment(appointment)),
 		totalPages: response.data.totalPages

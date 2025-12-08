@@ -31,10 +31,10 @@ type AppData = {
 	setAppointments: (data: Appointment[]) => void
 	setAppointmentsToConclude: (data: Pageable<Appointment>) => void
 
-	refreshMaterials: (queryParams?: PageableQueryParams) => Promise<void>
-	refreshMaterialSets: (queryParams?: PageableQueryParams) => Promise<void>
-	refreshAppointments: (startDate?: string, endDate?: string) => Promise<void>
-	refreshAppointmentsToConclude: (queryParams?: PageableQueryParams) => Promise<void>
+	refreshMaterials: (queryParams?: PageableQueryParams, signal?: AbortSignal) => Promise<void>
+	refreshMaterialSets: (queryParams?: PageableQueryParams, signal?: AbortSignal) => Promise<void>
+	refreshAppointments: (startDate?: string, endDate?: string, signal?: AbortSignal) => Promise<void>
+	refreshAppointmentsToConclude: (queryParams?: PageableQueryParams, signal?: AbortSignal) => Promise<void>
 }
 
 const AppDataContext = createContext<AppData | undefined>(undefined)
@@ -93,27 +93,35 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 	}
 
-	const fetchMaterials = async (queryParams?: PageableQueryParams) => {
+	const fetchMaterials = async (queryParams?: PageableQueryParams, signal?: AbortSignal) => {
 		setIsLoading(prev => ({ ...prev, materials: true }))
 
 		try {
-			const data = await getMaterials(queryParams)
+			const data = await getMaterials(queryParams, signal)
 			setMaterials(data)
 		} catch (error) {
-			console.error('Erro ao buscar materiais:', error)
+			if (error.name === "CanceledError" || error.name === "AbortError") {
+				console.log("Requisição de materiais cancelada")
+			} else {
+				console.error('Erro ao buscar materiais:', error)
+			}
 		} finally {
 			setIsLoading(prev => ({ ...prev, materials: false }))
 		}
 	}
 
-	const fetchMaterialSets = async (queryParams?: PageableQueryParams) => {
+	const fetchMaterialSets = async (queryParams?: PageableQueryParams, signal?: AbortSignal) => {
 		setIsLoading(prev => ({ ...prev, materialSets: true }))
 
 		try {
-			const data = await getMaterialSets(queryParams)
+			const data = await getMaterialSets(queryParams, signal)
 			setMaterialSets(data)
 		} catch (error) {
-			console.error('Erro ao buscar conjuntos:', error)
+			if (error.name === "CanceledError" || error.name === "AbortError") {
+				console.log("Requisição de conjuntos cancelada")
+			} else {
+				console.error('Erro ao buscar conjuntos:', error)
+			}
 		} finally {
 			setIsLoading(prev => ({ ...prev, materialSets: false }))
 		}
@@ -132,7 +140,7 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 		}
 	}
 
-	const fetchAppointments = useCallback(async (startDate?: string, endDate?: string) => {
+	const fetchAppointments = useCallback(async (startDate?: string, endDate?: string, signal?: AbortSignal) => {
 		setIsLoading(prev => ({ ...prev, appointments: true }))
 
 		try {
@@ -145,23 +153,31 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 			const startDateString = start.toISOString().split('T')[0]
 			const endDateString = end.toISOString().split('T')[0]
 
-			const data = await getAppointments(startDateString, endDateString)
+			const data = await getAppointments(startDateString, endDateString, signal)
 			setAppointments(data)
 		} catch (error) {
-			console.error('Erro ao buscar consultas:', error)
+			if (error.name === "CanceledError" || error.name === "AbortError") {
+				console.log("Requisição de consultas cancelada")
+			} else {
+				console.error('Erro ao buscar consultas:', error)
+			}
 		} finally {
 			setIsLoading(prev => ({ ...prev, appointments: false }))
 		}
 	}, [])
 
-	const fetchAppointmentsToConclude = async (queryParams?: PageableQueryParams) => {
+	const fetchAppointmentsToConclude = async (queryParams?: PageableQueryParams, signal?: AbortSignal) => {
 		setIsLoading(prev => ({ ...prev, appointmentsToConclude: true }))
 
 		try {
-			const data = await getAppointmentsToConclude(queryParams)
+			const data = await getAppointmentsToConclude(queryParams, signal)
 			_setAppointmentsToConclude(data)
 		} catch (error) {
-			console.error('Erro ao buscar consultas:', error)
+			if (error.name === "CanceledError" || error.name === "AbortError") {
+				console.log("Requisição de consultas cancelada")
+			} else {
+				console.error('Erro ao buscar consultas:', error)
+			}
 		} finally {
 			setIsLoading(prev => ({ ...prev, appointmentsToConclude: false }))
 		}

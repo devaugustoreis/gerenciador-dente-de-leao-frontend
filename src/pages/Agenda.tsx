@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAppData } from "@/store/AppDataContext";
 import AppointmentModel from "@/models/appointments/appointment.model";
-import Calendar from "@/components/agenda/Calendar"
-import AppointmentModal from "@/components/agenda/modals/AppointmentModal";
-import DeleteModal from "@/components/shared/DeleteModal";
+import Calendar from "@/components/appointments/Calendar"
+import AppointmentModal from "@/components/appointments/modals/AppointmentModal";
+import DeleteModal from "@/components/shared/modals/DeleteModal";
 
 export type ModalAction = "NEW" | "EDIT" | "DELETE" | null;
 
@@ -13,8 +13,13 @@ const Agenda = () => {
     const [ modalAction, setModalAction ] = useState<ModalAction>(null);
 
     useEffect(() => {
-        refreshMaterials()
-        refreshMaterialSets()
+        const abortController = new AbortController();
+        const signal = abortController.signal;
+
+        refreshMaterials(undefined, signal);
+        refreshMaterialSets(undefined, signal);
+
+        return () => abortController.abort();
     }, [])
 
     const openModal = (action: ModalAction, appointment: AppointmentModel) => {

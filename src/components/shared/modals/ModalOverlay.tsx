@@ -14,9 +14,7 @@ const modalOverlayStyle: React.CSSProperties = {
 }
 
 const ModalOverlay = ({ onClose }: ModalOverlayProps) => {
-    return (
-        <div style={modalOverlayStyle} onClick={onClose}></div>
-    )
+    return <div style={modalOverlayStyle} onClick={onClose}></div>
 }
 
 export default ModalOverlay

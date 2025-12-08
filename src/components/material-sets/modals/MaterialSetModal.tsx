@@ -8,9 +8,9 @@ import { PageableQueryParams } from "@/services/api"
 import { createMaterialSet, updateMaterialSet } from "@/services/materialSetService"
 import MaterialSet, { MaterialSetItem } from "@/models/material-sets/material-set.model"
 import MaterialItemModel from "@/models/materials/material-item.model"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import CustomInput from "@/components/shared/CustomInput"
-import CustomButton from "@/components/shared/CustomButton"
+import ModalOverlay from "@/components/shared/modals/ModalOverlay"
+import CustomInput from "@/components/shared/forms/CustomInput"
+import CustomButton from "@/components/shared/forms/CustomButton"
 
 interface MaterialSetModalProps {
     materialSet?: MaterialSet

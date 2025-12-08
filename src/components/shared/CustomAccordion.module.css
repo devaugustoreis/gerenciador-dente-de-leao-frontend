@@ -1,9 +1,10 @@
 :root {
+    --material-set-height: 5.2rem;
     --material-set-border: 8px;
     --material-set-padding: 1.6rem;
 }
 
-.materialSetContainer {
+.accordionContainer {
     width: 100%;
     box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.3);
     border: 2px solid var(--gray);
@@ -17,9 +18,13 @@
     }
 }
 
-.materialSetHeader {
+.accordionHeader {
     width: 100%;
-    padding: var(--material-set-padding);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 var(--material-set-padding);
+    height: var(--material-set-height);
     background-color: var(--light-gray);
     border-radius: var(--material-set-border) var(--material-set-border) 0 0;
     color: var(--font-black);
@@ -28,7 +33,38 @@
     font-weight: 600;
 }
 
-.materialSetBody {
+.appointmentDate {
+    min-width: 11rem;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    border-radius: 8px 0 0 8px;
+    background-color: var(--deep-blue);
+    border-color: var(--deep-blue);
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.4rem;
+    line-height: 2rem;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.appointmentHour {
+    width: 7rem;
+    padding: 0 1.2rem;
+    display: flex;
+    align-items: center;
+    border-radius: 0;
+    background-color: #fff;
+    border: 1px solid var(--deep-blue);
+    color: var(--deep-blue);
+    font-size: 1.4rem;
+    line-height: 2rem;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.accordionBody {
     position: relative;
     overflow: hidden;
     transition: max-height 0.4s ease, opacity 0.4s ease;

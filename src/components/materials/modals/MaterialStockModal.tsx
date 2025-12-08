@@ -6,9 +6,9 @@ import { movementMaterialStock } from "@/services/materialService"
 import MaterialItemModel from "@/models/materials/material-item.model"
 import MovementStock, { MovementType } from "@/models/materials/movement-stock.model"
 import styles from "@/components/materials/modals/MaterialModal.module.css"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import InputLabel from "@/components/shared/InputLabel"
-import CustomButton from "@/components/shared/CustomButton"
+import ModalOverlay from "@/components/shared/modals/ModalOverlay"
+import InputLabel from "@/components/shared/forms/InputLabel"
+import CustomButton from "@/components/shared/forms/CustomButton"
 
 interface AddMaterialModalProps {
     action: "add" | "remove"

@@ -1,6 +1,11 @@
 import { ArrowUpward, ArrowDownward } from "@mui/icons-material"
-import { useState } from "react"
-import styles from "@/components/shared/CustomFilter.module.css"
+import { useEffect, useState } from "react"
+
+const filterContainerStyle: React.CSSProperties = {
+    display: "flex",
+    gap: "1.5rem",
+    flexWrap: "wrap"
+}
 
 export interface FilterOption {
     id: string
@@ -16,6 +21,13 @@ interface CustomFilterProps {
 
 const CustomFilter = ({ options, selectedFilter, onFilterChange }: CustomFilterProps) => {
     const [sortDirection, setSortDirection] = useState<{ [key: string]: 'asc' | 'desc' }>({})
+
+    // sincroniza direção inicial quando o pai muda selectedFilter
+    useEffect(() => {
+        if (!selectedFilter) return
+        const [field, dir] = selectedFilter.split(',')
+        setSortDirection(prev => ({ ...prev, [field]: dir as 'asc' | 'desc' }))
+    }, [selectedFilter])
 
     const handleSortClick = (value: string) => {
         const isActive = selectedFilter.startsWith(value)
@@ -33,7 +45,7 @@ const CustomFilter = ({ options, selectedFilter, onFilterChange }: CustomFilterP
     }
 
     return (
-        <div className={styles.filterContainer}>
+        <div style={filterContainerStyle}>
             {options.map(option => {
                 const direction = sortDirection[option.value] ?? 'asc'
                 const isActive = selectedFilter.startsWith(option.value)
@@ -43,12 +55,10 @@ const CustomFilter = ({ options, selectedFilter, onFilterChange }: CustomFilterP
                         key={option.id}
                         onClick={() => handleSortClick(option.value)}
                         className={`btn ${isActive ? 'active' : ''}`}
-                        title={`${option.label} - ${direction === 'asc' ? 'Ascendente' : 'Descendente'}`}
+                        title={`Ordernar por ${option.label} - ${direction === 'asc' ? 'Ascendente' : 'Descendente'}`}
                     >
-                        <span className={styles.filterLabel}>{option.label}</span>
-                        <div className={styles.arrowIcon}>
-                            { direction === 'asc' ? <ArrowUpward /> : <ArrowDownward /> }
-                        </div>
+                        <span>{option.label}</span>
+                        { direction === 'asc' ? <ArrowUpward /> : <ArrowDownward /> }
                     </button>
                 )
             })}

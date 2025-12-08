@@ -3,13 +3,14 @@ import toast from "react-hot-toast"
 import styles from "./MaterialModal.module.css"
 import { useAppData } from "@/store/AppDataContext"
 import { PageableQueryParams } from "@/services/api"
-import { createMaterial, updateMaterial } from "@/services/materialService"
+import { createMaterial, updateMaterial, uploadMaterialImage } from "@/services/materialService"
 import MaterialItem from "@/models/materials/material-item.model"
 import CreateUpdateMaterial from "@/models/materials/create-update-material"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import InputLabel from "@/components/shared/InputLabel"
-import CustomButton from "@/components/shared/CustomButton"
-import SelectLabel from "@/components/shared/SelectLabel"
+import ModalOverlay from "@/components/shared/modals/ModalOverlay"
+import InputLabel from "@/components/shared/forms/InputLabel"
+import CustomButton from "@/components/shared/forms/CustomButton"
+import SelectLabel from "@/components/shared/forms/SelectLabel"
+import placeholderImg from "@/assets/images/material-placeholder.png"
 
 interface MaterialModalProps {
     material?: MaterialItem
@@ -19,7 +20,10 @@ interface MaterialModalProps {
 
 const MaterialModal = ({ material, pagination, onClose }: MaterialModalProps) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const { materialsCategories, refreshMaterials } = useAppData()
+    const [ imageFile, setImageFile ] = useState<File | null>(null)
+    const [ imagePreview, setImagePreview ] = useState<string | null>(null)
     const isEditing = !!material
 
     const config = {
@@ -57,11 +61,41 @@ const MaterialModal = ({ material, pagination, onClose }: MaterialModalProps) =>
         setFormData({ ...formData, name: e.target.value })
     }
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null
+        if (!file) return
+
+        // opcional: validações de tipo/tamanho
+        if (!file.type.startsWith("image/")) {
+            toast.error("Por favor selecione um arquivo de imagem.")
+            return
+        }
+        if (file.size > 1_048_576) { 
+            toast.error("Imagem muito grande. Tamanho máximo: 1 MB.")
+            return
+        }
+
+        setImageFile(file)
+        const url = URL.createObjectURL(file)
+        setImagePreview(url)
+    }
+
+    useEffect(() => {
+        return () => {
+            if (imagePreview) URL.revokeObjectURL(imagePreview)
+        }
+    }, [imagePreview])
+
+    const handleSelectImageClick = () => {
+        fileInputRef.current?.click()
+    }
+
     const handleSave = async () => {
         const action = isEditing ? updateMaterial(formData) : createMaterial(formData)
+        let material: MaterialItem = new MaterialItem()
 
         try {
-            await toast.promise(
+            material = await toast.promise(
                 action,
                 {
                     loading: modalConfig.loadingToast,
@@ -69,14 +103,38 @@ const MaterialModal = ({ material, pagination, onClose }: MaterialModalProps) =>
                     error: "Ocorreu um erro ao salvar o material!"
                 }
             )
-            onClose()
-            const queryParams = { ...pagination, page: pagination.page - 1 }
-            refreshMaterials(queryParams)
-
         } catch (error) {
             console.error("Erro ao salvar material:", error)
         }
+
+        if (imageFile) {
+          const imageBase64 = await fileToBase64(imageFile)
+          
+          try {
+              await toast.promise(
+                  uploadMaterialImage(material.id, imageBase64),
+                  {
+                      loading: "O upload da imagem está em andamento.",
+                      success: "A imagem foi carregada com sucesso!",
+                      error: "Ocorreu um erro durante o upload da imagem!"
+                  }
+              )
+          } catch (error) {
+              console.error("Erro ao salvar material:", error)
+          }
+        }
+
+        onClose()
+        const queryParams = { ...pagination, page: pagination.page - 1 }
+        refreshMaterials(queryParams)
     }
+
+    const fileToBase64 = (file: File) => new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(String(reader.result))
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+    })
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -111,17 +169,23 @@ const MaterialModal = ({ material, pagination, onClose }: MaterialModalProps) =>
                         />
                     </div>
                     
-                    { isEditing && (
-                        <div className={styles.imgContainer}>
-                            <img src={material.imageSrc} alt={`Imagem de placeholder`} className={`${styles.materialImage} ${styles[modalConfig.style]}`} />
-                            <div>
-                                <button className={`${styles.selectImgBtn} ${styles[modalConfig.style]}`}>Selecionar Imagem</button>
-                                <p className={styles.imgDetails}>
-                                    Tamanho máximo: 1mb <br />Dimensão máxima: 200x125px
-                                </p>
-                            </div>
+                    <div className={styles.imgContainer}>
+                        {/* Mostra preview se selecionada, senão imagem do material (se houver), senão placeholder */}
+                        <img
+                            src={imagePreview ?? material?.imageSrc ?? placeholderImg}
+                            alt={`Imagem de ${formData.name || 'Materiais odontólogicos'}`}
+                            className={`${styles.materialImage} ${styles[modalConfig.style]}`}
+                        />
+                        <div>
+                            <input ref={fileInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFileChange} />
+                            <button type="button" className={`${styles.selectImgBtn} ${styles[modalConfig.style]}`} onClick={handleSelectImageClick} >
+                                Selecionar Imagem
+                            </button>
+                            <p className={styles.imgDetails}>
+                                Tamanho máximo: 1mb <br />Dimensão máxima: 200x125px
+                            </p>
                         </div>
-                    )}
+                    </div>
 
                     <div className={styles.actionsContainer}>
                         <CustomButton label="Cancelar" actionColor={`outline-${modalConfig.style}`} onClick={onClose} />

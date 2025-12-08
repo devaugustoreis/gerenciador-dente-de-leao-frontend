@@ -26,6 +26,7 @@ const MaterialCard = ({ material, onDelete, onEdit, onRemoveStock, onAddStock }:
 
             <div className={styles.materialData}>
                 <h3 className={styles.materialName} title={ material.name }> { material.name }</h3>
+                <h4 className={styles.materialCategory} title={material.category.label}>{ material.category.label }</h4>
                 <h5 className={styles.materialStockQuantity}> <b>{ material.stockQuantity }</b> unidades restantes</h5>
                 <p>Agendado: { material.scheduledQuantity } unidades</p>
                 <p>Término Previsto: { material.expectedEndDate ? new Date(material.expectedEndDate).toLocaleDateString() : "-" }</p>

@@ -5,10 +5,10 @@ import MaterialSet from "@/models/material-sets/material-set.model";
 const materialSetAPI = "/entities/material-group"
 
 
-export const getMaterialSets = async (queryParams?: PageableQueryParams): Promise<Pageable<MaterialSet>> => {
+export const getMaterialSets = async (queryParams?: PageableQueryParams, signal?: AbortSignal): Promise<Pageable<MaterialSet>> => {
 	const defaultParams = { page: 0, size: 999, sort: ['label,asc'] }
     const params = { ...defaultParams, ...(queryParams || {}) }
-	const response = await api.get<Pageable<MaterialSet>>(materialSetAPI, { params });
+	const response = await api.get<Pageable<MaterialSet>>(materialSetAPI, { params, signal });
 	return {
 		content: response.data.content.map(materialSet => new MaterialSet(materialSet)),
 		totalPages: response.data.totalPages

@@ -1,24 +1,15 @@
 import { useEffect, useState } from "react";
-import { Pagination, Stack } from "@mui/material";
 import { useAppData } from "@/store/AppDataContext";
 import AppointmentModel, { AppointmentStatus } from "@/models/appointments/appointment.model";
 import SectionHeader from "@/components/shared/SectionHeader";
+import CustomFilter, { FilterOption } from "@/components/shared/CustomFilter";
 import Spinner from "@/components/shared/Spinner";
 import Appointment from "@/components/shared/CustomAccordion";
-import AppointmentModal from "@/components/agenda/modals/AppointmentModal";
-import ConcludeAppointmentModal from "@/components/agenda/modals/ConcludeAppointmentModal";
-import DeleteModal from "@/components/shared/DeleteModal";
+import AppointmentModal from "@/components/appointments/modals/AppointmentModal";
+import ConcludeAppointmentModal from "@/components/appointments/modals/ConcludeAppointmentModal";
+import DeleteModal from "@/components/shared/modals/DeleteModal";
+import CustomPagination from "@/components/shared/CustomPagination";
 
-
-const appointmentsContainerStyle: React.CSSProperties = {
-    marginTop: "20px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "20px",
-    maxHeight: "calc(100vh - 288px)",
-    padding: "0 2px 6px 2px",
-    overflowY: "auto",
-}
 
 type ModalAction = "EDIT" | "CONCLUDE" | "DELETE" | null;
 
@@ -26,21 +17,40 @@ const AppointmentFinalization = () => {
     const { isLoading, appointmentsToConclude, refreshMaterials, refreshMaterialSets, refreshAppointmentsToConclude } = useAppData()
     const [ pagination, setPagination ] = useState({
         page: 1,
-        // 60px = Topbar | 80px = Section padding on top and bottom. | 64px = Section Header | 20px = Section content margin | 64px = Pagination + margin 
+        // 60px = Topbar | 80px = Section padding | 84px = Section Header + margin | 34px = Filter | 20px = Section content margin | 64px = Pagination + margin 
         // 76px = Concluded Appointment Accordion + gap between each 
-        size: Math.round((window.innerHeight - 60 - 80 - 64 - 20 - 64) / 76),
+        size: Math.round((window.innerHeight - 60 - 80 - 84 - 34 - 20 - 64) / 76),
         sort: ["startDate,desc"]
     })
     const [ openSetId, setOpenSetId ] = useState<string | null>(null)
     const [ modalAction, setModalAction ] = useState<ModalAction>(null)
     const [ selectedAppointment, setSelectedAppointment ] = useState<AppointmentModel>(new AppointmentModel())
 
+    const filterOptions: FilterOption[] = [
+        { id: "sort-start-date", label: "Data e Hora", value: "startDate" },
+        { id: "sort-pacient-name", label: "Nome do Paciente", value: "patientName" },
+    ]
+
     useEffect(() => {
-        refreshMaterials()
-        refreshMaterialSets()
+        const abortController = new AbortController();
+        const signal = abortController.signal;
+
+        refreshMaterials(undefined, signal);
+        refreshMaterialSets(undefined, signal);
+
         const queryParams = { ...pagination, page: pagination.page - 1 }
         refreshAppointmentsToConclude(queryParams)
+
+        return () => abortController.abort();
     }, [pagination]);
+
+    const handleFilterChange = (filterValue: string) => {
+        setPagination(prev => ({
+            ...prev,
+            page: 1,
+            sort: [filterValue]
+        }))
+    }
 
     const openModal = (action: ModalAction, appointment?: AppointmentModel) => {
         setModalAction(action)
@@ -86,36 +96,15 @@ const AppointmentFinalization = () => {
     return (
         <>
             <SectionHeader title="FINALIZAR CONSULTAS" />
+            <CustomFilter options={filterOptions} selectedFilter={pagination.sort[0]} onFilterChange={handleFilterChange} />
 
             { isLoading.appointmentsToConclude ? <Spinner /> : (
-                <div style={appointmentsContainerStyle}>
+                <div className="sectionContentContainer flexColumn">
                     {renderAppointments()}
                 </div>
             )}
 
-            <Stack spacing={2} alignItems="center" sx={{ mt: 3, position: "absolute", bottom: 0, width: "100%" }}>
-                <Pagination
-                    count={appointmentsToConclude.totalPages}
-                    page={pagination.page}
-                    onChange={handlePageChange}
-                    size="large"
-                    sx={{
-                        '& .MuiPaginationItem-root': {
-                            fontSize: '1.25rem',
-                            minWidth: '40px',
-                            height: '40px',
-                            padding: '0 8px'
-                        },
-                        '& .MuiPaginationItem-root.Mui-selected': {
-                            backgroundColor: '#21618c',
-                            color: '#ffffff'
-                        },
-                        '& .MuiPaginationItem-root.Mui-selected:hover': {
-                            backgroundColor: '#5dade2'
-                        }
-                    }}
-                />
-            </Stack>
+            <CustomPagination count={appointmentsToConclude.totalPages} page={pagination.page} onChange={handlePageChange} />
 
             { renderModal() }
         </>

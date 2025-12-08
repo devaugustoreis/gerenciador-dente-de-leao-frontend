@@ -4,10 +4,10 @@ import { useAppData } from "@/store/AppDataContext"
 import excludeIcon from "@/assets/icons/excludeIcon.svg"
 import { deleteMaterial } from "@/services/materialService"
 import { deleteMaterialSet } from "@/services/materialSetService"
-import { deleteAppointment } from "@/services/appointmentService"
-import styles from "@/components/shared/DeleteModal.module.css"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import CustomButton from "@/components/shared/CustomButton"
+import { cancelAppointment } from "@/services/appointmentService"
+import styles from "@/components/shared/modals/DeleteModal.module.css"
+import ModalOverlay from "@/components/shared/modals/ModalOverlay"
+import CustomButton from "@/components/shared/forms/CustomButton"
 import MaterialItem from "@/models/materials/material-item.model"
 import MaterialSet from "@/models/material-sets/material-set.model"
 import Appointment from "@/models/appointments/appointment.model"
@@ -80,17 +80,17 @@ const DeleteModal = ({ element, pagination, onClose }: DeleteModalProps) => {
             }
         }
 
-    // Deleting Appointment
+    // Canceling Appointment
     } else if (element instanceof Appointment) {
         const { appointments, setAppointments } = useAppData()
 
-        modalHeader = "Excluir Consulta"
-        renderMessage = () => <>Você realmente deseja excluir a consulta de <b>{element.patientName} às {getAppointmentHour(element.startDate)}</b>?</>
+        modalHeader = "Desmarcar Consulta"
+        renderMessage = () => <>Você realmente deseja desmarcar a consulta de <b>{element.patientName} às {getAppointmentHour(element.startDate)}</b>?</>
 
         handleDelete = async () => {
             try {
                 await toast.promise(
-                    deleteAppointment(element.id),
+                    cancelAppointment(element.id),
                     {
                         loading: "Excluindo consulta...",
                         success: "A consulta foi excluída com sucesso!",
@@ -135,7 +135,7 @@ const DeleteModal = ({ element, pagination, onClose }: DeleteModalProps) => {
 
                     <div className={styles.actionsContainer}>
                         <CustomButton label="Cancelar" actionColor="outline-red" onClick={onClose} />
-                        <CustomButton label="Confirmar" actionColor="red" onClick={handleDelete} />
+                        <CustomButton label="Confirmar" actionColor="red" onClick={handleDelete} /> 
                     </div>
                 </div>
             </div>

@@ -1,24 +1,15 @@
 import React, { useEffect, useState } from "react"
-import { Pagination, Stack } from "@mui/material";
 import { useAppData } from "@/store/AppDataContext"
 import SectionHeader from "@/components/shared/SectionHeader"
 import MaterialFilter from "@/components/materials/MaterialFilter";
 import MaterialCard from "@/components/materials/MaterialCard"
 import MaterialModal from "@/components/materials/modals/MaterialModal"
 import MaterialStockModal from "@/components/materials/modals/MaterialStockModal"
-import DeleteModal from "@/components/shared/DeleteModal"
+import DeleteModal from "@/components/shared/modals/DeleteModal"
 import Spinner from "@/components/shared/Spinner"
+import CustomPagination from "@/components/shared/CustomPagination";
 import MaterialItemModel from "@/models/materials/material-item.model"
 
-const materialItensContainerStyle: React.CSSProperties = {
-    marginTop: "20px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-    gap: "32px",
-    maxHeight: "calc(100vh - 348px)",
-    padding: "0 2px 6px 2px",
-    overflowY: "auto",
-}
 
 type ModalAction = "NEW" | "EDIT" | "ADD STOCK" | "REMOVE STOCK" | "DELETE" | null
 
@@ -36,9 +27,9 @@ const Materials = () => {
 
 
     useEffect(() => {
-        const queryParams = { ...pagination, page: pagination.page - 1 }
-        refreshMaterials(queryParams)
-    }, [pagination])
+        const queryParams = { ...pagination, page: pagination.page - 1 };
+        refreshMaterials(queryParams);
+    }, [pagination]);
 
     const currentSort = pagination.sort.find(s => !s.startsWith('highlight')) ?? "name,asc"
 
@@ -126,34 +117,12 @@ const Materials = () => {
             />
             
             { isLoading.materials ? <Spinner /> : (
-                <div style={ materialItensContainerStyle }>
+                <div className="sectionContentContainer grid">
                     { renderMaterialItems() }
                 </div>
             )}
 
-            <Stack spacing={2} alignItems="center" sx={{ mt: 3, position: "absolute", bottom: 0, width: "100%" }}>
-                <Pagination
-                    count={materials.totalPages}
-                    page={pagination.page}
-                    onChange={handlePageChange}
-                    size="large"
-                    sx={{
-                        '& .MuiPaginationItem-root': {
-                            fontSize: '1.25rem',
-                            minWidth: '40px',
-                            height: '40px',
-                            padding: '0 8px'
-                        },
-                        '& .MuiPaginationItem-root.Mui-selected': {
-                            backgroundColor: '#21618c',
-                            color: '#ffffff'
-                        },
-                        '& .MuiPaginationItem-root.Mui-selected:hover': {
-                            backgroundColor: '#5dade2'
-                        }
-                    }}
-                />
-            </Stack>
+            <CustomPagination count={materials.totalPages} page={pagination.page} onChange={handlePageChange} />
 
             { renderModal() }
         </>

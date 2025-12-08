@@ -10,5 +10,5 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  // base: process.env.VITE_BASE_PATH || "/gerenciador-dente-de-leao-frontend"
+  base: process.env.VITE_BASE_PATH || "/gerenciador-dente-de-leao-frontend"
 })

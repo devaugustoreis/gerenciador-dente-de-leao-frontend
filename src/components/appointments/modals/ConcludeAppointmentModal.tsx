@@ -4,9 +4,9 @@ import { useAppData } from "@/store/AppDataContext"
 import { PageableQueryParams } from "@/services/api"
 import { concludeAppointment } from "@/services/appointmentService"
 import Appointment, { AppointmentStatus } from "@/models/appointments/appointment.model"
-import styles from "@/components/agenda/modals/ConcludeAppointmentModal.module.css"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import CustomButton from "@/components/shared/CustomButton"
+import styles from "@/components/appointments/modals/ConcludeAppointmentModal.module.css"
+import ModalOverlay from "@/components/shared/modals/ModalOverlay"
+import CustomButton from "@/components/shared/forms/CustomButton"
 
 interface ConcludeAppointmentModalProps {
     appointmentToConclude: Appointment

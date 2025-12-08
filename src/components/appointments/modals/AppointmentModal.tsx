@@ -7,12 +7,12 @@ import { createAppointment, updateAppointment } from "@/services/appointmentServ
 import Appointment, { AppointmentMaterial } from "@/models/appointments/appointment.model"
 import MaterialItem from "@/models/materials/material-item.model"
 import MaterialSetModel from "@/models/material-sets/material-set.model"
-import styles from "@/components/agenda/modals/AppointmentModal.module.css"
+import styles from "@/components/appointments/modals/AppointmentModal.module.css"
 import Spinner from "@/components/shared/Spinner"
-import ModalOverlay from "@/components/shared/ModalOverlay"
-import CustomButton from "@/components/shared/CustomButton"
-import InputLabel from "@/components/shared/InputLabel"
-import SelectLabel from "@/components/shared/SelectLabel"
+import ModalOverlay from "@/components/shared/modals/ModalOverlay"
+import CustomButton from "@/components/shared/forms/CustomButton"
+import InputLabel from "@/components/shared/forms/InputLabel"
+import SelectLabel from "@/components/shared/forms/SelectLabel"
 
 interface AppointmentModalProps {
     appointment: Appointment
@@ -111,7 +111,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                     updatedMaterials.push({
                         id: setItem.material.id,
                         quantity: setItem.quantity,
-                        material: setItem.material
+                        name: setItem.material.name
                     })
                 }
             })
@@ -130,7 +130,7 @@ const AppointmentModal = ({ appointment, onClose }: AppointmentModalProps) => {
                     item.id === material.id ? { ...item, quantity: item.quantity + 1 } : item,
                 )
             } else {
-                newMaterials = [...prev.materials, { id: material.id, quantity: 1, material: material }]
+                newMaterials = [...prev.materials, { id: material.id, quantity: 1, name: material.name }]
             }
 
             return new Appointment({ ...prev, materials: newMaterials });

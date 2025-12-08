@@ -7,7 +7,7 @@ import DenteDeLeaoLogo from "@/components/login/DenteDeLeaoLogo";
 import LoginInput from "@/components/login/LoginInput";
 
 const ResetPassword = () => {
-    const [ resetToken, setResetToken ] = useState<string | null>(null)
+    // const [ resetToken, setResetToken ] = useState<string | null>(null)
     const [ newPassword, setNewPassword ] = useState("")
     const [ newPasswordConfirmation, setNewPasswordConfirmation ] = useState("")
     const [ error, setError ] = useState("")
@@ -16,7 +16,7 @@ const ResetPassword = () => {
     const navigate = useNavigate()
     
     useEffect(() => {
-        setResetToken(searchParams.get('token'))
+        // setResetToken(searchParams.get('token'))
     }, [searchParams, navigate])
 
     const handleResetPassword = async () => {

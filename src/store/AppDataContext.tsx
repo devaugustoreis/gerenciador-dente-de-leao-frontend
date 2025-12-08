@@ -100,7 +100,7 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 			const data = await getMaterials(queryParams, signal)
 			setMaterials(data)
 		} catch (error) {
-			if (error.name === "CanceledError" || error.name === "AbortError") {
+			if (error instanceof Error && (error.name === "CanceledError" || error.name === "AbortError")) {
 				console.log("Requisição de materiais cancelada")
 			} else {
 				console.error('Erro ao buscar materiais:', error)
@@ -117,7 +117,7 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 			const data = await getMaterialSets(queryParams, signal)
 			setMaterialSets(data)
 		} catch (error) {
-			if (error.name === "CanceledError" || error.name === "AbortError") {
+			if (error instanceof Error && (error.name === "CanceledError" || error.name === "AbortError")) {
 				console.log("Requisição de conjuntos cancelada")
 			} else {
 				console.error('Erro ao buscar conjuntos:', error)
@@ -156,7 +156,7 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 			const data = await getAppointments(startDateString, endDateString, signal)
 			setAppointments(data)
 		} catch (error) {
-			if (error.name === "CanceledError" || error.name === "AbortError") {
+			if (error instanceof Error && (error.name === "CanceledError" || error.name === "AbortError")) {
 				console.log("Requisição de consultas cancelada")
 			} else {
 				console.error('Erro ao buscar consultas:', error)
@@ -173,7 +173,7 @@ export const AppDataProvider = ({ children }: { children: React.ReactNode }) => 
 			const data = await getAppointmentsToConclude(queryParams, signal)
 			_setAppointmentsToConclude(data)
 		} catch (error) {
-			if (error.name === "CanceledError" || error.name === "AbortError") {
+			if (error instanceof Error && (error.name === "CanceledError" || error.name === "AbortError")) {
 				console.log("Requisição de consultas cancelada")
 			} else {
 				console.error('Erro ao buscar consultas:', error)

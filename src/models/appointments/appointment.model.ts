@@ -22,7 +22,7 @@ export default class Appointment {
     constructor(data: Partial<Appointment> = {}) {
         this.id = data.id ?? "Sem id";
         this.patientName = data.patientName ?? "";
-        this.consultationTypeId = data.consultationTypeId ?? "313a95ce-af15-55d3-9403-eed37e8d2bef";
+        this.consultationTypeId = data.consultationTypeId ?? "6dbc7b90-a258-5dcf-b011-c8ce3b9dfbd7";
         this.startDate = data.startDate ? new Date(data.startDate) : new Date();
         this.endDate = data.endDate ? new Date(data.endDate) : new Date(this.startDate.getTime() + 30 * 60 * 1000); 
         this.materials = data.materials ?? [];
